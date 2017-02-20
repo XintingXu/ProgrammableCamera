@@ -1,0 +1,1 @@
+sudo apt install libopencv-dev qt5-default libqt5opengl5-dev qtcreator ccache -y
