@@ -32,8 +32,8 @@ private:
         int Exposure;		//拍照时的曝光度
     };
 public:
-    CameraNumber(int CameraNumber);			//构造函数
-    ~CameraNumber();						//析构函数
+    CameraControl(int CameraNumber);			//构造函数
+    ~CameraControl();						//析构函数
     bool setCamera(int CameraNumber);		//设定摄像头的编号，返回值为bool
     bool setBrightness(int Brightness);		//设定拍照时的白平衡，返回值为bool
     bool setContrast(int Contrast);			//设定拍照时的对比度，返回值为bool
