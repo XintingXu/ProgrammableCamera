@@ -28,7 +28,8 @@ unix{
 SOURCES += main.cpp\
         programmablecamera.cpp
 
-HEADERS  += programmablecamera.h
+HEADERS  += programmablecamera.h \
+    CameraControl.h
 
 FORMS    += programmablecamera.ui
 
