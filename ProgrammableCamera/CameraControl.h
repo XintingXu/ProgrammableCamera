@@ -20,7 +20,7 @@ class CameraControl:public QThread{		//多线程运行
 private:
     int CameraNumber;		//摄像头的编号
     cv::VideoCapture *CameraCapture;	//摄像头捕获类
-    struct CameraConfigure{		//摄像头参数结构体
+    struct {		//摄像头参数结构体
         cv::Size2i Size;	//照片的分辨率
         int Brightness;		//拍照时的亮度
         int Contrast;		//拍照时的对比度
@@ -30,7 +30,7 @@ private:
         double Gamma;		//拍照时的Gamma值
         int WhiteBalance;	//拍照时的白平衡
         int Exposure;		//拍照时的曝光度
-    };
+    }CameraConfigure;
 public:
     CameraControl(int CameraNumber);			//构造函数
     ~CameraControl();						//析构函数
