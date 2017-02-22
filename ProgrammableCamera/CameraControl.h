@@ -13,8 +13,8 @@
 设计定于单独的线程运行，且设定运行在一个CPU核中。
 
 作者：徐欣廷
-创建时间：2017-02-22 09:54:17
-上次修改时间：2017-02-22 09:54:30
+创建时间：2017-02-22
+上次修改时间：2017-02-22
 */
 class CameraControl:public QThread{		//多线程运行
 private:
@@ -22,7 +22,7 @@ private:
     cv::VideoCapture *CameraCapture;	//摄像头捕获类
     struct CameraConfigure{		//摄像头参数结构体
         cv::Size2i Size;	//照片的分辨率
-        int Brightness;		//拍照时的白平衡
+        int Brightness;		//拍照时的亮度
         int Contrast;		//拍照时的对比度
         int Saturation;		//拍照时的色饱和度
         int Tone;			//拍照时的色调
@@ -35,7 +35,7 @@ public:
     CameraNumber(int CameraNumber);			//构造函数
     ~CameraNumber();						//析构函数
     bool setCamera(int CameraNumber);		//设定摄像头的编号，返回值为bool
-    bool setBrightness(int Brightness);		//设定拍照时的白平衡，返回值为bool
+    bool setBrightness(int Brightness);		//设定拍照时的亮度，返回值为bool
     bool setContrast(int Contrast);			//设定拍照时的对比度，返回值为bool
     bool setSaturation(int Saturation);		//设定拍照时的色饱和度，返回值为bool
     bool setTone(int Tone);					//设定拍照时的色调，返回值为bool
