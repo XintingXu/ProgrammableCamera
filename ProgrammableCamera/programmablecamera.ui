@@ -27,43 +27,44 @@
     <property name="title">
      <string>Mode</string>
     </property>
-    <addaction name="actionHand"/>
-    <addaction name="actionImport"/>
-    <addaction name="actionHDR"/>
-    <addaction name="actionAll"/>
-    <addaction name="actionSingle"/>
+    <addaction name="actionModeHand"/>
+    <addaction name="actionModeImport"/>
+    <addaction name="actionModeHDR"/>
+    <addaction name="actionModeAll"/>
+    <addaction name="actionModeSingle"/>
    </widget>
    <widget class="QMenu" name="menuConfig">
     <property name="title">
      <string>Config</string>
     </property>
-    <addaction name="actionCameras"/>
-    <addaction name="actionResolution"/>
-    <addaction name="actionExposure"/>
-    <addaction name="actionBrightness"/>
-    <addaction name="actionContrast"/>
-    <addaction name="actionGamma"/>
+    <addaction name="actionConfigImport"/>
+    <addaction name="actionConfigCameras"/>
+    <addaction name="actionConfigResolution"/>
+    <addaction name="actionConfigExposure"/>
+    <addaction name="actionConfigBrightness"/>
+    <addaction name="actionConfigContrast"/>
+    <addaction name="actionConfigGamma"/>
    </widget>
    <widget class="QMenu" name="menuHandle">
     <property name="title">
      <string>Handle</string>
     </property>
-    <addaction name="actionImport_2"/>
-    <addaction name="actionNo"/>
+    <addaction name="actionHandleImport"/>
+    <addaction name="actionHandleNo"/>
    </widget>
    <widget class="QMenu" name="menuSave">
     <property name="title">
      <string>Save</string>
     </property>
-    <addaction name="actionSave_All"/>
-    <addaction name="actionSave_Result"/>
+    <addaction name="actionSaveAll"/>
+    <addaction name="actionSaveResult"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
      <string>About</string>
     </property>
-    <addaction name="actionAbout_Project"/>
-    <addaction name="actionAbout_Author"/>
+    <addaction name="actionAboutProject"/>
+    <addaction name="actionAboutAuthor"/>
    </widget>
    <widget class="QMenu" name="menuQuit">
     <property name="title">
@@ -86,88 +87,87 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionHand">
+  <action name="actionModeHand">
    <property name="text">
     <string>Hand</string>
    </property>
   </action>
-  <action name="actionImport">
+  <action name="actionModeImport">
    <property name="text">
     <string>Import</string>
    </property>
   </action>
-  <action name="actionHDR">
+  <action name="actionModeHDR">
    <property name="text">
     <string>HDR</string>
    </property>
   </action>
-  <action name="actionAll">
+  <action name="actionModeAll">
    <property name="text">
     <string>All</string>
    </property>
   </action>
-  <action name="actionSingle">
+  <action name="actionModeSingle">
    <property name="text">
     <string>Single</string>
    </property>
   </action>
-  <action name="actionCameras">
+  <action name="actionConfigCameras">
    <property name="text">
     <string>Cameras</string>
    </property>
   </action>
-  <action name="actionResolution">
+  <action name="actionConfigResolution">
    <property name="text">
     <string>Resolution</string>
    </property>
   </action>
-  <action name="actionExposure">
+  <action name="actionConfigExposure">
    <property name="text">
     <string>Exposure</string>
    </property>
   </action>
-  <action name="actionBrightness">
+  <action name="actionConfigBrightness">
    <property name="text">
     <string>Brightness</string>
    </property>
   </action>
-  <action name="actionContrast">
+  <action name="actionConfigContrast">
    <property name="text">
     <string>Contrast</string>
    </property>
   </action>
-  <action name="actionGamma">
+  <action name="actionConfigGamma">
    <property name="text">
     <string>Gamma</string>
    </property>
   </action>
-  <action name="actionImport_2">
+  <action name="actionHandleImport">
    <property name="text">
     <string>Import</string>
    </property>
   </action>
-  <action name="actionNo">
+  <action name="actionHandleNo">
    <property name="text">
     <string>No</string>
    </property>
   </action>
-  <action name="actionSave_All">
+  <action name="actionSaveAll">
    <property name="text">
     <string>Save All</string>
    </property>
   </action>
-  <action name="actionSave_Result">
+  <action name="actionSaveResult">
    <property name="text">
     <string>Save Result</string>
    </property>
   </action>
-  <action name="actionAbout_Project">
+  <action name="actionAboutProject">
    <property name="text">
     <string>About Project</string>
    </property>
   </action>
-  <action name="actionAbout_Author">
+  <action name="actionAboutAuthor">
    <property name="text">
     <string>About Author</string>
    </property>
@@ -175,6 +175,11 @@
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionConfigImport">
+   <property name="text">
+    <string>Import</string>
    </property>
   </action>
  </widget>

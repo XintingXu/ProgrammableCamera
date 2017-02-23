@@ -27,12 +27,18 @@ unix{
 
 SOURCES += main.cpp\
         programmablecamera.cpp \
-    CameraControl.cpp
+    CameraControl.cpp \
+    handmode.cpp \
+    importmode.cpp
 
 HEADERS  += programmablecamera.h \
-    CameraControl.h
+    CameraControl.h \
+    handmode.h \
+    importmode.h
 
-FORMS    += programmablecamera.ui
+FORMS    += programmablecamera.ui \
+    handmode.ui \
+    importmode.ui
 
 LIBS += /usr/lib/arm-linux-gnueabihf/libopencv_highgui.so \
         /usr/lib/arm-linux-gnueabihf/libopencv_core.so    \

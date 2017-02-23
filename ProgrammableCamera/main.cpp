@@ -1,4 +1,5 @@
 #include "programmablecamera.h"
+#include "handmode.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

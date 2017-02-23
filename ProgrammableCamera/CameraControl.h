@@ -17,6 +17,8 @@
 上次修改时间：2017-02-22
 */
 class CameraControl:public QThread{		//多线程运行
+    Q_OBJECT
+
 private:
     int CameraNumber;		//摄像头的编号
     cv::VideoCapture *CameraCapture;	//摄像头捕获类

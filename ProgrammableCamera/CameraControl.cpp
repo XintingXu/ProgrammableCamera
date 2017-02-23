@@ -118,6 +118,7 @@ bool CameraControl::setTone(int Tone = 0){
 
 //设定拍照时的清晰度，返回值为bool
 bool CameraControl::setResolution(int Resolution = 0){  //This function is left to be compeleted with the camera API.
+    this->CameraConfigure.Resolution = Resolution;
     return true;
 }
 
