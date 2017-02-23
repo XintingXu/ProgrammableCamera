@@ -23,8 +23,8 @@ private:
 
     void initUIPointers();
 
-    HandMode *handMode;
-    ImportMode *importMode;
+    HandMode handMode;
+    ImportMode importMode;
 
     QMenu *MenuMode;
     QMenu *MenuConfig;

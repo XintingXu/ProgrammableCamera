@@ -16,8 +16,6 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent) :
 
 ProgrammableCamera::~ProgrammableCamera()
 {
-    delete handMode;
-    delete importMode;
     delete ui;
 }
 
@@ -30,7 +28,7 @@ void ProgrammableCamera::initUIPointers(){
     this->MenuQuit = ui->menuQuit;
 
     this->actionModeHand = ui->actionModeHand;
-    this->actionModeImport = ui->actionModeHand;
+    this->actionModeImport = ui->actionModeImport;
     this->actionModeHDR = ui->actionModeHDR;
     this->actionModeAll = ui->actionModeAll;
     this->actionModeSingle = ui->actionModeSingle;
@@ -56,22 +54,11 @@ void ProgrammableCamera::initUIPointers(){
 }
 
 void ProgrammableCamera::onPressModeHand(){
-    handMode = new HandMode();
-    /*
-    if(handMode == NULL)
-        qDebug() << "handMode is NULL.";
-    else
-        qDebug() << "handMode is not NULL";
-    */
-
-    handMode->show();
-
-    //delete(handMode);
+    handMode.show();
 }
 
 void ProgrammableCamera::onPressModeImport(){
-    importMode = new ImportMode();
-    importMode->show();
+    importMode.show();
 }
 
 void ProgrammableCamera::onPressModeHDR(){
