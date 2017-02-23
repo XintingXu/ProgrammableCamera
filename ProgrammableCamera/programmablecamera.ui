@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>717</width>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,64 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>717</width>
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>Mode</string>
+    </property>
+    <addaction name="actionHand"/>
+    <addaction name="actionImport"/>
+    <addaction name="actionHDR"/>
+    <addaction name="actionAll"/>
+    <addaction name="actionSingle"/>
+   </widget>
+   <widget class="QMenu" name="menuConfig">
+    <property name="title">
+     <string>Config</string>
+    </property>
+    <addaction name="actionCameras"/>
+    <addaction name="actionResolution"/>
+    <addaction name="actionExposure"/>
+    <addaction name="actionBrightness"/>
+    <addaction name="actionContrast"/>
+    <addaction name="actionGamma"/>
+   </widget>
+   <widget class="QMenu" name="menuHandle">
+    <property name="title">
+     <string>Handle</string>
+    </property>
+    <addaction name="actionImport_2"/>
+    <addaction name="actionNo"/>
+   </widget>
+   <widget class="QMenu" name="menuSave">
+    <property name="title">
+     <string>Save</string>
+    </property>
+    <addaction name="actionSave_All"/>
+    <addaction name="actionSave_Result"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbout_Project"/>
+    <addaction name="actionAbout_Author"/>
+   </widget>
+   <widget class="QMenu" name="menuQuit">
+    <property name="title">
+     <string>Quit</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuMode"/>
+   <addaction name="menuConfig"/>
+   <addaction name="menuHandle"/>
+   <addaction name="menuSave"/>
+   <addaction name="menuAbout"/>
+   <addaction name="menuQuit"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -33,6 +87,96 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionHand">
+   <property name="text">
+    <string>Hand</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
+  <action name="actionHDR">
+   <property name="text">
+    <string>HDR</string>
+   </property>
+  </action>
+  <action name="actionAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionSingle">
+   <property name="text">
+    <string>Single</string>
+   </property>
+  </action>
+  <action name="actionCameras">
+   <property name="text">
+    <string>Cameras</string>
+   </property>
+  </action>
+  <action name="actionResolution">
+   <property name="text">
+    <string>Resolution</string>
+   </property>
+  </action>
+  <action name="actionExposure">
+   <property name="text">
+    <string>Exposure</string>
+   </property>
+  </action>
+  <action name="actionBrightness">
+   <property name="text">
+    <string>Brightness</string>
+   </property>
+  </action>
+  <action name="actionContrast">
+   <property name="text">
+    <string>Contrast</string>
+   </property>
+  </action>
+  <action name="actionGamma">
+   <property name="text">
+    <string>Gamma</string>
+   </property>
+  </action>
+  <action name="actionImport_2">
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
+  <action name="actionNo">
+   <property name="text">
+    <string>No</string>
+   </property>
+  </action>
+  <action name="actionSave_All">
+   <property name="text">
+    <string>Save All</string>
+   </property>
+  </action>
+  <action name="actionSave_Result">
+   <property name="text">
+    <string>Save Result</string>
+   </property>
+  </action>
+  <action name="actionAbout_Project">
+   <property name="text">
+    <string>About Project</string>
+   </property>
+  </action>
+  <action name="actionAbout_Author">
+   <property name="text">
+    <string>About Author</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -184,3 +184,8 @@ bool CameraControl::setHightAndWidth(cv::Size2i Size = cv::Size2i(720,1080)){
         return false;
     }
 }
+
+
+void CameraControl::run(){
+    ;
+}

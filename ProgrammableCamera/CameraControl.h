@@ -31,6 +31,9 @@ private:
         int WhiteBalance;	//拍照时的白平衡
         int Exposure;		//拍照时的曝光度
     }CameraConfigure;
+
+    void run();
+
 public:
     CameraControl(int CameraNumber);			//构造函数
     ~CameraControl();						//析构函数
