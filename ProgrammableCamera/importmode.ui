@@ -40,22 +40,22 @@
    </property>
    <item>
     <property name="text">
-     <string>aaa</string>
+     <string>模式A</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>bbbb</string>
+     <string>模式B</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>ccccc</string>
+     <string>模式C</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>ddddd</string>
+     <string>模式D</string>
     </property>
    </item>
   </widget>
