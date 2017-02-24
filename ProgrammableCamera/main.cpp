@@ -6,7 +6,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     ProgrammableCamera w;
-    w.show();
+    //w.show();
+
+    w.showFullScreen();
 
     return a.exec();
 }
