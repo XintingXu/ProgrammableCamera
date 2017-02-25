@@ -6,6 +6,8 @@
 #include <opencv2/ocl/ocl.hpp>
 #include <QDebug>
 #include <iostream>
+#include <pthread.h>
+
 
 /*
 摄像头控制类
@@ -21,6 +23,7 @@ class CameraControl:public QThread{		//多线程运行
 
 private:
     int CameraNumber;		//摄像头的编号
+    cpu_set_t setMask;      //mask used to configure which cpu to run
     cv::VideoCapture *CameraCapture;	//摄像头捕获类
     struct {		//摄像头参数结构体
         cv::Size2i Size;	//照片的分辨率

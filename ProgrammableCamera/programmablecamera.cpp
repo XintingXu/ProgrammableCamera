@@ -51,14 +51,24 @@ void ProgrammableCamera::initUIPointers(){
     this->actionAboutProject = ui->actionAboutProject;
 
     this->actionQuit = ui->actionQuit;
+
+    this->labelCamera1 = ui->labelCamera1;
+    this->labelCamera2 = ui->labelCamera2;
+    this->labelCamera3 = ui->labelCamera3;
+    this->labelCamera4 = ui->labelCamera4;
+
 }
 
 void ProgrammableCamera::onPressModeHand(){
-    handMode.show();
+    qDebug() << "HandMode pressed.";
+    if(!importMode.isActiveWindow())
+        handMode.show();
 }
 
 void ProgrammableCamera::onPressModeImport(){
-    importMode.show();
+    qDebug() << "Import mode pressed.";
+    if(!handMode.isActiveWindow())
+        importMode.show();
 }
 
 void ProgrammableCamera::onPressModeHDR(){

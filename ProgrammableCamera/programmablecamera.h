@@ -5,6 +5,7 @@
 #include <handmode.h>
 #include <importmode.h>
 #include <CameraControl.h>
+#include <QLabel>
 
 namespace Ui {
 class ProgrammableCamera;
@@ -57,6 +58,11 @@ private:
     QAction *actionAboutAuthor;
 
     QAction *actionQuit;
+
+    QLabel *labelCamera1;
+    QLabel *labelCamera2;
+    QLabel *labelCamera3;
+    QLabel *labelCamera4;
 
 private slots:
     void onPressModeHand();
