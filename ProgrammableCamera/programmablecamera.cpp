@@ -81,7 +81,7 @@ void ProgrammableCamera::onPressModeHand(){
 void ProgrammableCamera::onPressModeImport(){
     qDebug() << "Import mode pressed.";
     //if(!handMode.isActiveWindow())
-        importMode.show();
+       importMode.show();
 }
 
 void ProgrammableCamera::onPressModeHDR(){

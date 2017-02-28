@@ -5,7 +5,7 @@ CameraControl.h的函数实现
 
 作者：徐欣廷
 创建时间：2017-02-22
-修改时间：2017-02-22
+修改时间：2017-02-25
 */
 
 
@@ -24,6 +24,13 @@ CameraControl::CameraControl(int CameraNumber = 0){
     this->CameraConfigure.Gamma = 0.0;
     this->CameraConfigure.WhiteBalance = 0;
     this->CameraConfigure.Exposure = 0;
+
+    CPU_ZERO(&setMask);
+    CPU_SET(CameraNumber % 4, &setMask);
+
+    if(pthread_setaffinity_np(pthread_self(),sizeof(setMask),&setMask) < 0){
+        qDebug() << "set thread to specific cpu core failed";
+    }
 }
 
 
@@ -31,6 +38,7 @@ CameraControl::CameraControl(int CameraNumber = 0){
 CameraControl::~CameraControl(){
     CameraCapture->release();
     delete(CameraCapture);
+    pthread_exit(NULL);
     qDebug("CameraControl of Camera : %d is deleted.",this->CameraNumber);
 }
 
