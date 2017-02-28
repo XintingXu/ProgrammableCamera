@@ -2,6 +2,8 @@
 #define IMPORTMODE_H
 
 #include <QDialog>
+#include <QString>
+#include <QHash>
 
 namespace Ui {
 class ImportMode;

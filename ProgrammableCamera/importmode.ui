@@ -6,12 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>480</width>
+    <height>320</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>480</width>
+    <height>320</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>480</width>
+    <height>320</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(178, 176, 109);</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
@@ -38,26 +53,9 @@
      <height>271</height>
     </rect>
    </property>
-   <item>
-    <property name="text">
-     <string>模式A</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>模式B</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>模式C</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>模式D</string>
-    </property>
-   </item>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
   </widget>
  </widget>
  <resources/>

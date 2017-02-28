@@ -5,6 +5,9 @@
 #include <handmode.h>
 #include <importmode.h>
 #include <CameraControl.h>
+#include <QLabel>
+#include <QMap>
+#include <QString>
 
 namespace Ui {
 class ProgrammableCamera;
@@ -17,14 +20,13 @@ class ProgrammableCamera : public QMainWindow
 public:
     explicit ProgrammableCamera(QWidget *parent = 0);
     ~ProgrammableCamera();
+    HandMode handMode;
+    ImportMode importMode;
 
 private:
     Ui::ProgrammableCamera *ui;
 
     void initUIPointers();
-
-    HandMode handMode;
-    ImportMode importMode;
 
     QMenu *MenuMode;
     QMenu *MenuConfig;
@@ -58,6 +60,11 @@ private:
 
     QAction *actionQuit;
 
+    QLabel *labelCamera1;
+    QLabel *labelCamera2;
+    QLabel *labelCamera3;
+    QLabel *labelCamera4;
+
 private slots:
     void onPressModeHand();
     void onPressModeImport();
@@ -66,6 +73,11 @@ private slots:
     void onPressModeSingle();
 
     void onPressQuit();
+};
+
+
+class ModeRead:public QThread{
+    void run();
 };
 
 #endif // PROGRAMMABLECAMERA_H

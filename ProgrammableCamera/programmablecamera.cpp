@@ -1,17 +1,30 @@
 #include "programmablecamera.h"
 #include "ui_programmablecamera.h"
 
+#include <QDir>
+
+QString USBpath;
+QMap <int,QString> readConfigName;
+QMap <int,QString> readHandleName;
+bool USBDeviceOK = false;
+
+
 ProgrammableCamera::ProgrammableCamera(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ProgrammableCamera)
 {
+    ModeRead modeRead;
+
     ui->setupUi(this);
 
+    modeRead.start();
     initUIPointers();
 
     connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()));
     connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()));
     connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()));
+
+    modeRead.wait();
 }
 
 ProgrammableCamera::~ProgrammableCamera()
@@ -51,14 +64,24 @@ void ProgrammableCamera::initUIPointers(){
     this->actionAboutProject = ui->actionAboutProject;
 
     this->actionQuit = ui->actionQuit;
+
+    this->labelCamera1 = ui->labelCamera1;
+    this->labelCamera2 = ui->labelCamera2;
+    this->labelCamera3 = ui->labelCamera3;
+    this->labelCamera4 = ui->labelCamera4;
+
 }
 
 void ProgrammableCamera::onPressModeHand(){
-    handMode.show();
+    qDebug() << "HandMode pressed.";
+    //if(!importMode.isActiveWindow())
+        handMode.show();
 }
 
 void ProgrammableCamera::onPressModeImport(){
-    importMode.show();
+    qDebug() << "Import mode pressed.";
+    //if(!handMode.isActiveWindow())
+        importMode.show();
 }
 
 void ProgrammableCamera::onPressModeHDR(){
@@ -75,4 +98,60 @@ void ProgrammableCamera::onPressModeSingle(){
 
 void ProgrammableCamera::onPressQuit(){
     QApplication::quit();
+}
+
+
+void ModeRead::run(){
+    QDir USBDir("/media/pi/");
+    if(!USBDir.exists()){
+        qDebug() << "Errors about the USB FileSystem" << endl;
+    }else{
+        USBDir.setFilter(QDir::Dirs | QDir::NoSymLinks);
+        USBDir.setSorting(QDir::Size);
+
+        QFileInfoList list = USBDir.entryInfoList();
+/*
+        for (int i = 0 ; i < list.size() ; i ++){
+            qDebug() << "i = " << i << " : " << list.at(i).absoluteFilePath() << endl;
+        }
+*/
+        QFileInfo fileInfo = list.at(0);
+
+        USBpath = fileInfo.absoluteFilePath();
+//        qDebug() << USBpath << endl;
+
+        USBDir = QDir(USBpath);
+
+        if(USBDir.exists()){
+            qDebug() << "USB device read OK." << endl;// USBDir << endl;
+            USBDeviceOK = true;
+
+            USBDir = QDir(USBpath.append("/config/"));
+
+            if(!USBDir.exists()){
+                qDebug() << USBDir << endl;
+                qDebug() << "Could not find config folder." << endl;
+            }else{
+                QStringList filter;
+                filter << "*.ini";
+                USBDir.setNameFilters(filter);
+
+                list = USBDir.entryInfoList();
+
+                if(list.count() == 0){
+                    qDebug() << "Cannot find any .ini file." << endl;
+                }else{
+                    qDebug() << "Found .ini file." << endl;
+
+                    for(int i = 0 ; i < list.count() ; i++){
+                        readConfigName.insert(i,list.at(i).completeBaseName());
+                        qDebug() << readConfigName.value(i) << endl;
+                    }
+                }
+            }
+
+        }else{
+            qDebug() << "USB device is not reachable." << endl;
+        }
+    }
 }
