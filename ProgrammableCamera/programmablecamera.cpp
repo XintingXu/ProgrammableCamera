@@ -8,27 +8,28 @@ QMap <int,QString> readConfigName;
 QMap <int,QString> readHandleName;
 bool USBDeviceOK = false;
 
+ModeRead *modeRead;
 
 ProgrammableCamera::ProgrammableCamera(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ProgrammableCamera)
 {
-    ModeRead modeRead;
-
     ui->setupUi(this);
 
-    modeRead.start();
+    modeRead = new ModeRead;
+    modeRead->start();
     initUIPointers();
 
     connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()));
     connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()));
     connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()));
 
-    modeRead.wait();
+    modeRead->wait();
 }
 
 ProgrammableCamera::~ProgrammableCamera()
 {
+    delete modeRead;
     delete ui;
 }
 
@@ -126,7 +127,8 @@ void ModeRead::run(){
             qDebug() << "USB device read OK." << endl;// USBDir << endl;
             USBDeviceOK = true;
 
-            USBDir = QDir(USBpath.append("/config/"));
+            QString temp = USBpath;
+            USBDir = QDir(temp.append("/config/"));
 
             if(!USBDir.exists()){
                 qDebug() << USBDir << endl;
@@ -145,7 +147,33 @@ void ModeRead::run(){
 
                     for(int i = 0 ; i < list.count() ; i++){
                         readConfigName.insert(i,list.at(i).completeBaseName());
-                        qDebug() << readConfigName.value(i) << endl;
+                        //qDebug() << readConfigName.value(i) << endl;
+                    }
+
+                    temp = USBpath;
+                    USBDir = QDir(temp.append("/handle/"));
+
+                    if(!USBDir.exists()){
+                        qDebug() << USBDir << endl;
+                        qDebug() << "Could not find handle folder." << endl;
+                    }else{
+                        USBDir.setFilter(QDir::NoSymLinks | QDir::Files);
+                        USBDir.setSorting(QDir::Name);
+
+                        list = USBDir.entryInfoList();
+
+                        if(list.count() == 0){
+                            qDebug() << "Cannot find any executable file." << endl;
+                        }else{
+                            qDebug() << "Found Executable file." << endl;
+
+                            for(int i = 0; i < list.count() ; i++){
+                                readHandleName.insert(i,list.at(i).fileName());
+                                //qDebug() << readHandleName.value(i) << endl;
+                            }
+
+                            qDebug() << "Config and Handle files read done" << endl;
+                        }
                     }
                 }
             }
