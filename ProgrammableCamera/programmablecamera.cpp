@@ -4,8 +4,8 @@
 #include <QDir>
 
 QString USBpath;
-QMap <int,QString> readConfigName;
-QMap <int,QString> readHandleName;
+QMap <QString,QString> readConfigName;
+QMap <QString,QString> readHandleName;
 bool USBDeviceOK = false;
 
 ModeRead *modeRead;
@@ -146,8 +146,8 @@ void ModeRead::run(){
                     qDebug() << "Found .ini file." << endl;
 
                     for(int i = 0 ; i < list.count() ; i++){
-                        readConfigName.insert(i,list.at(i).completeBaseName());		//只读取文件名，不读配置名
-                        //qDebug() << readConfigName.value(i) << endl;
+                        readConfigName.insert(list.at(i).completeBaseName(),list.at(i).absoluteFilePath());		//只读取文件名，不读配置名
+                        qDebug() << list.at(i).completeBaseName() << " : " << readConfigName.value(list.at(i).completeBaseName()) << endl;
                     }
 
                     temp = USBpath;
@@ -168,8 +168,8 @@ void ModeRead::run(){
                             qDebug() << "Found Executable file." << endl;
 
                             for(int i = 0; i < list.count() ; i++){
-                                readHandleName.insert(i,list.at(i).fileName());		//读取处理文件，包含拓展格式
-                                //qDebug() << readHandleName.value(i) << endl;
+                                readHandleName.insert(list.at(i).completeBaseName(),list.at(i).absoluteFilePath());		//读取处理文件，包含拓展格式
+                                qDebug() << list.at(i).completeBaseName() << " : " << readHandleName.value(list.at(i).completeBaseName()) << endl;
                             }
 
                             qDebug() << "Config and Handle files read done" << endl;
