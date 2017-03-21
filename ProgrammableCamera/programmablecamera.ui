@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>ProgrammableCamera</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">alternate-background-color: rgb(255, 255, 255);</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="labelCamera1">
     <property name="geometry">
@@ -46,6 +49,9 @@
       <width>240</width>
       <height>135</height>
      </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(23, 199, 231);</string>
     </property>
     <property name="text">
      <string>NULL</string>
@@ -72,6 +78,9 @@
       <height>135</height>
      </size>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(23, 199, 231);</string>
+    </property>
     <property name="text">
      <string>NULL</string>
     </property>
@@ -97,6 +106,9 @@
       <height>135</height>
      </size>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(23, 199, 231);</string>
+    </property>
     <property name="text">
      <string>NULL</string>
     </property>
@@ -121,6 +133,9 @@
       <width>240</width>
       <height>135</height>
      </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(23, 199, 231);</string>
     </property>
     <property name="text">
      <string>NULL</string>

@@ -76,13 +76,15 @@ void ProgrammableCamera::initUIPointers(){
 void ProgrammableCamera::onPressModeHand(){
     qDebug() << "HandMode pressed.";
     //if(!importMode.isActiveWindow())
-        handMode.show();
+        handMode.showFullScreen();
+        handMode.setWindowModality(Qt::ApplicationModal);
 }
 
 void ProgrammableCamera::onPressModeImport(){
     qDebug() << "Import mode pressed.";
     //if(!handMode.isActiveWindow())
-       importMode.show();
+       importMode.showFullScreen();
+       importMode.setWindowModality(Qt::ApplicationModal);
 }
 
 void ProgrammableCamera::onPressModeHDR(){
