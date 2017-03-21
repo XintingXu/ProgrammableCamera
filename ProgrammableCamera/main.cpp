@@ -10,8 +10,5 @@ int main(int argc, char *argv[])
 
     w.showFullScreen();
 
-    w.handMode.setParent(&w);
-    w.importMode.setParent(&w);
-
     return a.exec();
 }

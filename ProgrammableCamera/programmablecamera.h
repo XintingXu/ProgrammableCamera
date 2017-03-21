@@ -20,8 +20,8 @@ class ProgrammableCamera : public QMainWindow
 public:
     explicit ProgrammableCamera(QWidget *parent = 0);
     ~ProgrammableCamera();
-    HandMode handMode;
-    ImportMode importMode;
+    HandMode *handMode;
+    ImportMode *importMode;
 
 private:
     Ui::ProgrammableCamera *ui;
@@ -73,11 +73,6 @@ private slots:
     void onPressModeSingle();
 
     void onPressQuit();
-};
-
-
-class ModeRead:public QThread{
-    void run();
 };
 
 #endif // PROGRAMMABLECAMERA_H

@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QString>
 #include <QHash>
+#include <QThread>
+#include <QVector>
 
 namespace Ui {
 class ImportMode;
@@ -19,6 +21,13 @@ public:
 
 private:
     Ui::ImportMode *ui;
+};
+
+
+class ModeCheck : public QThread{
+  Q_OBJECT
+public:
+    void run();
 };
 
 #endif // IMPORTMODE_H
