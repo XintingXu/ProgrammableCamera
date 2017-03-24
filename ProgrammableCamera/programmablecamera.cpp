@@ -93,7 +93,8 @@ void ProgrammableCamera::onPressModeAll(){
 }
 
 void ProgrammableCamera::onPressModeSingle(){
-    ;
+    CameraControl camera0(0);
+    camera0.start();
 }
 
 void ProgrammableCamera::onPressQuit(){

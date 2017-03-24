@@ -40,6 +40,6 @@ FORMS    += programmablecamera.ui \
     handmode.ui \
     importmode.ui
 
-LIBS += /usr/lib/arm-linux-gnueabihf/libopencv_highgui.so \
-        /usr/lib/arm-linux-gnueabihf/libopencv_core.so    \
-        /usr/lib/arm-linux-gnueabihf/libopencv_imgproc.so\
+LIBS += /usr/local/lib/libopencv_highgui.so \
+        /usr/local/lib/libopencv_core.so    \
+        /usr/local/lib/libopencv_imgproc.so \

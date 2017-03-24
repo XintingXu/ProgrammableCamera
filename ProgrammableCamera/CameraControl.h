@@ -7,6 +7,10 @@
 #include <QDebug>
 #include <iostream>
 #include <pthread.h>
+#include <fcntl.h>
+#include <linux/videodev2.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 
 /*
@@ -24,7 +28,10 @@ class CameraControl:public QThread{		//多线程运行
 private:
     int CameraNumber;		//摄像头的编号
     cpu_set_t setMask;      //mask used to configure which cpu to run
-    cv::VideoCapture *CameraCapture;	//摄像头捕获类
+    int fd;                 //file handle
+    CvCapture *CameraCapture;
+    bool isUsed = false;
+
     struct {		//摄像头参数结构体
         cv::Size2i Size;	//照片的分辨率
         int Brightness;		//拍照时的亮度
@@ -52,6 +59,7 @@ public:
     bool setWhiteBalance(int WhiteBalance);	//设定拍照时的白平衡，返回值为bool
     bool setExposure(int Exposure);			//设定拍照时的曝光度，返回值为bool
     bool setHightAndWidth(cv::Size2i Size);	//设定拍照时的分辨率，返回值为bool
+    bool setConfighration();
 };
 
 
