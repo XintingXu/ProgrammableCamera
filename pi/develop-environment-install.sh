@@ -1,0 +1,1 @@
+sudo apt install libopencv-dev qt5-default libqt5opengl5-dev qtcreator ccache build-essential cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libv4l-dev libx264-dev libgtk2.0-dev libatlas-base-dev -y

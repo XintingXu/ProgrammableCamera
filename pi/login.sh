@@ -1,0 +1,1 @@
+curl 'http://10.0.0.55:801/include/auth_action.php' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Connection: keep-alive' --data 'action=login&username=853625143&password=1199552233&ac_id=1&user_ip=&nas_ip=&user_mac=&save_me=0&ajax=1' --compressed
