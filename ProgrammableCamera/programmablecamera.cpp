@@ -20,6 +20,13 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent) :
     connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()));
     connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()));
     connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()));
+
+    CameraControl *control;
+    control = new CameraControl(0);
+    control->setHightAndWidth(cv::Size2d(720,1280));
+    control->setGamma(32);
+    control->setExposure(100);
+    delete(control);
 }
 
 ProgrammableCamera::~ProgrammableCamera(){

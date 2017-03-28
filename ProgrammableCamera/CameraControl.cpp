@@ -10,7 +10,6 @@ CameraControl.h的函数实现
 
 extern int (*myclose)(int);
 
-
 //CameraControl的构造函数，需要传入摄像头的编号作为参数，默认设为0
 CameraControl::CameraControl(int CameraNumber = 0){
     this->CameraNumber = CameraNumber;
@@ -34,7 +33,6 @@ CameraControl::CameraControl(int CameraNumber = 0){
         qDebug() << "set thread to specific cpu core failed";
     }
 }
-
 
 //CameraControl的析构函数，释放内存
 CameraControl::~CameraControl(){
@@ -67,9 +65,8 @@ bool CameraControl::setCamera(int CameraNumber = 0){
 
 //设定拍照时的亮度，返回值为bool
 bool CameraControl::setBrightness(int Brightness = 0){
-    /*
     if(Brightness != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_BRIGHTNESS,(double)Brightness)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_BRIGHTNESS,(double)Brightness) == 0){
             this->CameraConfigure.Brightness = Brightness;
             qDebug() << "CameraCapture " << this->CameraNumber << " set Brightness to :" << Brightness << " successfully." << endl;
             return true;
@@ -80,14 +77,12 @@ bool CameraControl::setBrightness(int Brightness = 0){
     }else{  //let the camera set the brightness automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的对比度，返回值为bool
 bool CameraControl::setContrast(int Contrast = 0){
-    /*
     if(Contrast != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_CONTRAST,(double)Contrast)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_CONTRAST,(double)Contrast) == 0){
             this->CameraConfigure.Contrast = Contrast;
             qDebug() << "CameraCapture " << this->CameraNumber << " set Contrast to :" << Contrast << " successfully." << endl;
             return true;
@@ -98,14 +93,12 @@ bool CameraControl::setContrast(int Contrast = 0){
     }else{  //let the camera set the Contrast automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的色饱和度，返回值为bool
 bool CameraControl::setSaturation(int Saturation = 0){
-    /*
     if(Saturation != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_SATURATION,(double)Saturation)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_SATURATION,(double)Saturation) == 0){
             this->CameraConfigure.Saturation = Saturation;
             qDebug() << "CameraCapture " << this->CameraNumber << " set Saturation to :" << Saturation << " successfully." << endl;
             return true;
@@ -116,14 +109,12 @@ bool CameraControl::setSaturation(int Saturation = 0){
     }else{  //let the camera set the Saturation automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的色调，返回值为bool
 bool CameraControl::setTone(int Tone = 0){
-    /*
     if(Tone != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_HUE,(double)Tone)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_HUE,(double)Tone) == 0){
             this->CameraConfigure.Tone = Tone;
             qDebug() << "CameraCapture " << this->CameraNumber << " set Tone to :" << Tone << " successfully." << endl;
             return true;
@@ -134,7 +125,6 @@ bool CameraControl::setTone(int Tone = 0){
     }else{  //let the camera set the Tone automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的清晰度，返回值为bool
@@ -145,9 +135,8 @@ bool CameraControl::setResolution(int Resolution = 0){  //This function is left 
 
 //设定拍照时的Gamma值，返回值为bool
 bool CameraControl::setGamma(double Gamma = 0){
-    /*
     if(Gamma != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_GAMMA,(double)Gamma)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_GAMMA,(double)Gamma) == 0){
             this->CameraConfigure.Gamma = Gamma;
             qDebug() << "CameraCapture " << this->CameraNumber << " set Gamma to :" << Gamma << " successfully." << endl;
             return true;
@@ -158,14 +147,12 @@ bool CameraControl::setGamma(double Gamma = 0){
     }else{  //let the camera set the Gamma automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的白平衡，返回值为bool
 bool CameraControl::setWhiteBalance(int WhiteBalance = 0){
-    /*
     if(WhiteBalance != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_WHITE_BALANCE_RED_V,(double)WhiteBalance)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_WHITE_BALANCE_V,(double)WhiteBalance) == 0){
             this->CameraConfigure.WhiteBalance = WhiteBalance;
             qDebug() << "CameraCapture " << this->CameraNumber << " set WhiteBalance to :" << WhiteBalance << " successfully." << endl;
             return true;
@@ -176,14 +163,12 @@ bool CameraControl::setWhiteBalance(int WhiteBalance = 0){
     }else{  //let the camera set the WhiteBalance automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的曝光度，返回值为bool
 bool CameraControl::setExposure(int Exposure = 0){
-    /*
     if(Exposure != 0){
-        if(this->CameraCapture->set(CV_CAP_PROP_EXPOSURE,(double)Exposure)){
+        if(cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_EXPOSURE,(double)Exposure) == 0){
             this->CameraConfigure.Exposure = Exposure;
             qDebug() << "CameraCapture " << this->CameraNumber << " set Exposure to :" << Exposure << " successfully." << endl;
             return true;
@@ -194,14 +179,12 @@ bool CameraControl::setExposure(int Exposure = 0){
     }else{  //let the camera set the Exposure automatically
         return true;
     }
-    */
 }
 
 //设定拍照时的分辨率，返回值为bool
-bool CameraControl::setHightAndWidth(cv::Size2i Size = cv::Size2i(720,1080)){
-    /*
-    if(this->CameraCapture->set(CV_CAP_PROP_FRAME_HEIGHT,Size.height) &&
-        this->CameraCapture->set(CV_CAP_PROP_FRAME_WIDTH,Size.width)){
+bool CameraControl::setHightAndWidth(cv::Size2i Size = cv::Size2i(720,1280)){
+    if((cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_FRAME_HEIGHT,Size.height) == 0) &&
+        (cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_FRAME_WIDTH,Size.width) == 0)){
         this->CameraConfigure.Size = Size;
         qDebug() << "Frame size set OK." << endl;
         return true;
@@ -212,7 +195,6 @@ bool CameraControl::setHightAndWidth(cv::Size2i Size = cv::Size2i(720,1080)){
         qDebug() << "Frame size set Error." << endl;
         return false;
     }
-    */
 }
 
 
