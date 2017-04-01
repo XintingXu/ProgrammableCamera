@@ -20,13 +20,6 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent) :
     connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()));
     connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()));
     connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()));
-
-    CameraControl *control;
-    control = new CameraControl(0);
-    control->setHightAndWidth(cv::Size2d(720,1280));
-    control->setGamma(32);
-    control->setExposure(100);
-    delete(control);
 }
 
 ProgrammableCamera::~ProgrammableCamera(){
@@ -70,9 +63,6 @@ void ProgrammableCamera::initUIPointers(){
 
     this->labelCamera1 = ui->labelCamera1;
     this->labelCamera2 = ui->labelCamera2;
-    this->labelCamera3 = ui->labelCamera3;
-    this->labelCamera4 = ui->labelCamera4;
-
 }
 
 void ProgrammableCamera::onPressModeHand(){

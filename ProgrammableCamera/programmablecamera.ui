@@ -6,21 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>320</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>480</width>
-    <height>320</height>
+    <width>800</width>
+    <height>480</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>480</width>
-    <height>320</height>
+    <width>800</width>
+    <height>480</height>
    </size>
+  </property>
+  <property name="cursor">
+   <cursorShape>BlankCursor</cursorShape>
   </property>
   <property name="windowTitle">
    <string>ProgrammableCamera</string>
@@ -34,20 +37,20 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>240</width>
-      <height>135</height>
+      <width>400</width>
+      <height>225</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>240</width>
-      <height>135</height>
+      <width>400</width>
+      <height>225</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>240</width>
-      <height>135</height>
+      <width>400</width>
+      <height>225</height>
      </size>
     </property>
     <property name="styleSheet">
@@ -60,78 +63,22 @@
    <widget class="QLabel" name="labelCamera2">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>400</x>
       <y>0</y>
-      <width>240</width>
-      <height>135</height>
+      <width>400</width>
+      <height>225</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>240</width>
-      <height>135</height>
+      <width>400</width>
+      <height>225</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>240</width>
-      <height>135</height>
-     </size>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(23, 199, 231);</string>
-    </property>
-    <property name="text">
-     <string>NULL</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelCamera3">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>140</y>
-      <width>240</width>
-      <height>135</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>240</width>
-      <height>135</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>240</width>
-      <height>135</height>
-     </size>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(23, 199, 231);</string>
-    </property>
-    <property name="text">
-     <string>NULL</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelCamera4">
-    <property name="geometry">
-     <rect>
-      <x>240</x>
-      <y>140</y>
-      <width>240</width>
-      <height>135</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>240</width>
-      <height>135</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>240</width>
-      <height>135</height>
+      <width>400</width>
+      <height>225</height>
      </size>
     </property>
     <property name="styleSheet">
@@ -147,8 +94,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>480</width>
-     <height>27</height>
+     <width>800</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMode">

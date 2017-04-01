@@ -11,8 +11,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ProgrammableCamera
 TEMPLATE = app
 
-PRECOMPILED_HEADER = stable.h
-QMAKE_CXX = ccache gcc
+INSTALLS        = target
+target.files    = ProgrammableCamera
+target.path     = /home/pi/ProgrammableCamera
+
+#QMAKE_CXX = ccache gcc
 
 CONFIG += c++11
 
@@ -40,6 +43,8 @@ FORMS    += programmablecamera.ui \
     handmode.ui \
     importmode.ui
 
-LIBS += /usr/local/lib/libopencv_highgui.so \
-        /usr/local/lib/libopencv_core.so    \
-        /usr/local/lib/libopencv_imgproc.so \
+INCLUDEPATH += /usr/local/include
+
+LIBS += /usr/local/opencv-arm/lib/libopencv_core.so    \
+        /usr/local/opencv-arm/lib/libopencv_imgproc.so \
+        /usr/local/opencv-arm/lib/libopencv_highgui.so

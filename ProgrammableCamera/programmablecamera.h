@@ -62,8 +62,6 @@ private:
 
     QLabel *labelCamera1;
     QLabel *labelCamera2;
-    QLabel *labelCamera3;
-    QLabel *labelCamera4;
 
 private slots:
     void onPressModeHand();
