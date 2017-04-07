@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QMap>
 #include <QString>
+#include <QSignalMapper>
 
 namespace Ui {
 class ProgrammableCamera;
@@ -20,13 +21,16 @@ class ProgrammableCamera : public QMainWindow
 public:
     explicit ProgrammableCamera(QWidget *parent = 0);
     ~ProgrammableCamera();
-    HandMode *handMode;
-    ImportMode *importMode;
+    HandMode *handMode = NULL;
+    ImportMode *importMode = NULL;
 
 private:
     Ui::ProgrammableCamera *ui;
 
     void initUIPointers();
+    void readConfig();
+    void readHandle();
+    void setMenuItems();
 
     QMenu *MenuMode;
     QMenu *MenuConfig;
@@ -37,9 +41,6 @@ private:
 
     QAction *actionModeHand;
     QAction *actionModeImport;
-    QAction *actionModeHDR;
-    QAction *actionModeAll;
-    QAction *actionModeSingle;
 
     QAction *actionConfigImport;
     QAction *actionConfigCameras;
@@ -59,18 +60,25 @@ private:
     QAction *actionAboutAuthor;
 
     QAction *actionQuit;
+    QAction *actionPowerOFF;
 
     QLabel *labelCamera1;
     QLabel *labelCamera2;
 
+    QSignalMapper *signalsConfig;
+    QSignalMapper *signalsHandle;
+    QSignalMapper *signalsMode;
+
 private slots:
     void onPressModeHand();
     void onPressModeImport();
-    void onPressModeHDR();
-    void onPressModeAll();
-    void onPressModeSingle();
 
     void onPressQuit();
+    void onPressPowerOFF();
+
+    void onPressConfig(QString name);
+    void onPressHandle(QString name);
+    void onPressMode(QString name);
 };
 
 #endif // PROGRAMMABLECAMERA_H

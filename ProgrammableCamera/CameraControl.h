@@ -13,7 +13,31 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <QTimerEvent>
+#include <QTimer>
 
+
+struct CameraControlValue{		//摄像头参数结构体
+    cv::Size2i Size;	//照片的分辨率
+    int Brightness;		//拍照时的亮度
+    int Contrast;		//拍照时的对比度
+    int Saturation;		//拍照时的色饱和度
+    int Tone;			//拍照时的色调
+    int Resolution;		//拍照时的清晰度
+    double Gamma;		//拍照时的Gamma值
+    int WhiteBalance;	//拍照时的白平衡
+    int Exposure;		//拍照时的曝光度
+};
+
+/*
+ *
+ * platform-3f980000.usb-usb-0:1.4.2:1.0-video-index0   //normal camera using MJPEG encode
+ * platform-3f980000.usb-usb-0:1.4.2:1.0-video-index1   //normal camera using YUYV encode
+ * platform-3f980000.usb-usb-0:1.4.3:1.0-video-index0   //IR camera using MJPEG encode
+ * platform-3f980000.usb-usb-0:1.4.3:1.0-video-index1   //IR camera using YUYV encode
+ *
+ *
+ */
 
 /*
 摄像头控制类
@@ -33,23 +57,17 @@ private:
     int fd;                 //file handle
     CvCapture *CameraCapture;
     bool isUsed = false;
-
-    struct {		//摄像头参数结构体
-        cv::Size2i Size;	//照片的分辨率
-        int Brightness;		//拍照时的亮度
-        int Contrast;		//拍照时的对比度
-        int Saturation;		//拍照时的色饱和度
-        int Tone;			//拍照时的色调
-        int Resolution;		//拍照时的清晰度
-        double Gamma;		//拍照时的Gamma值
-        int WhiteBalance;	//拍照时的白平衡
-        int Exposure;		//拍照时的曝光度
-    }CameraConfigure;
+    QTimer update;
 
     void run();
 
+private slots:
+    void onTimerUpdate();
+
 public:
-    CameraControl(int CameraNumber);			//构造函数
+    CameraControlValue CameraConfigure;
+
+    CameraControl(int CameraNumber);		//构造函数
     ~CameraControl();						//析构函数
     bool setCamera(int CameraNumber);		//设定摄像头的编号，返回值为bool
     bool setBrightness(int Brightness);		//设定拍照时的亮度，返回值为bool

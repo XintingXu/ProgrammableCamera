@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,8 +14,6 @@ TEMPLATE = app
 INSTALLS        = target
 target.files    = ProgrammableCamera
 target.path     = /home/pi/ProgrammableCamera
-
-#QMAKE_CXX = ccache gcc
 
 CONFIG += c++11
 

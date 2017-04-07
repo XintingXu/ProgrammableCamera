@@ -21,6 +21,10 @@ public:
 
 private:
     Ui::ImportMode *ui;
+
+private slots:
+    void acceptPressed();
+    void rejectPressed();
 };
 
 

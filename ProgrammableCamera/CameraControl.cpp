@@ -1,4 +1,5 @@
 #include "CameraControl.h"
+#include <QTimer>
 
 /*
 CameraControl.h的函数实现
@@ -12,6 +13,8 @@ extern int (*myclose)(int);
 
 //CameraControl的构造函数，需要传入摄像头的编号作为参数，默认设为0
 CameraControl::CameraControl(int CameraNumber = 0){
+    this->fd = 0;
+
     this->CameraNumber = CameraNumber;
     //this->CameraCapture = cvCaptureFromCAM(this->CameraNumber);
 
@@ -25,6 +28,8 @@ CameraControl::CameraControl(int CameraNumber = 0){
     this->CameraConfigure.Gamma = 0.0;
     this->CameraConfigure.WhiteBalance = 0;
     this->CameraConfigure.Exposure = 0;
+
+    connect(&update,SIGNAL(timeout()),this,SLOT(onTimerUpdate()));
 
     CPU_ZERO(&setMask);
     CPU_SET(CameraNumber % 4, &setMask);
@@ -255,8 +260,17 @@ void CameraControl::run(){
                 myclose(fd);
                 fd = 0;
             }
+
+            //startTimer(100,Qt::PreciseTimer);   //start timer of viewfinder update
+            update.setTimerType(Qt::PreciseTimer);
+            update.start(100);
         }
     }else{
         ;
     }
+}
+
+void CameraControl::onTimerUpdate(){
+    qDebug() << "Camera : " << this->CameraNumber << " get Timer timeout() Signal." << endl;
+    update.start(100);
 }
