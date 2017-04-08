@@ -37,7 +37,7 @@ CameraControl::CameraControl(int CameraNumber = 0){
     if(pthread_setaffinity_np(pthread_self(),sizeof(setMask),&setMask) < 0){
         qDebug() << "set thread to specific cpu core failed";
     }
-    qDebug() << "Thread CameraControl :" << CameraNumber << " created." << endl;
+    qDebug() << "Thread CameraControl :" << CameraNumber << " created.";
 }
 
 //CameraControl的析构函数，释放内存
@@ -53,16 +53,16 @@ bool CameraControl::setCamera(int CameraNumber = 0){
     CameraCapture = cvCaptureFromCAM(CameraNumber);
     if(CameraCapture != NULL){
         this->CameraNumber = CameraNumber;
-        qDebug() << "Opened Camera : " << this->CameraNumber << " ." << endl;
+        qDebug() << "Opened Camera : " << this->CameraNumber << " .";
         return true;
     }else{
         this->CameraNumber = 0;
         CameraCapture = cvCaptureFromCAM(0);
         if(CameraCapture != NULL){
-            qDebug() << "Opened the default camera 0." << endl;
+            qDebug() << "Opened the default camera 0.";
             return true;
         }else{
-            qDebug() << "Cannot open default camera 0." << endl;
+            qDebug() << "Cannot open default camera 0.";
             return false;
         }
     }
@@ -78,10 +78,10 @@ bool CameraControl::setBrightness(int Brightness = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_brightness)){
             this->CameraConfigure.Brightness = Brightness;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Brightness to :" << Brightness << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Brightness to :" << Brightness << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Brightness failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Brightness failed.";
             return false;
         }
     }else{  //let the camera set the brightness automatically
@@ -98,10 +98,10 @@ bool CameraControl::setContrast(int Contrast = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_contrast)){
             this->CameraConfigure.Contrast = Contrast;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Contrast to :" << Contrast << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Contrast to :" << Contrast << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Contrast failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Contrast failed.";
             return false;
         }
     }else{  //let the camera set the Contrast automatically
@@ -118,10 +118,10 @@ bool CameraControl::setSaturation(int Saturation = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_saturation)){
             this->CameraConfigure.Saturation = Saturation;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Saturation to :" << Saturation << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Saturation to :" << Saturation << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Saturation failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Saturation failed.";
             return false;
         }
     }else{  //let the camera set the Saturation automatically
@@ -138,10 +138,10 @@ bool CameraControl::setTone(int Tone = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_tone)){
             this->CameraConfigure.Tone = Tone;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Tone to :" << Tone << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Tone to :" << Tone << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Tone failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Tone failed.";
             return false;
         }
     }else{  //let the camera set the Tone automatically
@@ -164,10 +164,10 @@ bool CameraControl::setGamma(double Gamma = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_gamma)){
             this->CameraConfigure.Gamma = Gamma;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Gamma to :" << Gamma << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Gamma to :" << Gamma << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Gamma failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Gamma failed.";
             return false;
         }
     }else{  //let the camera set the Gamma automatically
@@ -187,10 +187,10 @@ bool CameraControl::setWhiteBalance(int WhiteBalance = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_whitebalance)){
             this->CameraConfigure.WhiteBalance = WhiteBalance;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set WhiteBalance to :" << WhiteBalance << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set WhiteBalance to :" << WhiteBalance << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set WhiteBalance failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set WhiteBalance failed.";
             return false;
         }
     }else{  //let the camera set the WhiteBalance automatically
@@ -210,10 +210,10 @@ bool CameraControl::setExposure(int Exposure = 0){
 
         if(fd && ioctl(fd,VIDIOC_S_CTRL,&control_exposure)){
             this->CameraConfigure.Exposure = Exposure;
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Exposure to :" << Exposure << " successfully." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Exposure to :" << Exposure << " successfully.";
             return true;
         }else{
-            qDebug() << "CameraCapture " << this->CameraNumber << " set Exposure failed." << endl;
+            qDebug() << "CameraCapture " << this->CameraNumber << " set Exposure failed.";
             return false;
         }
     }else{  //let the camera set the Exposure automatically
@@ -226,13 +226,13 @@ bool CameraControl::setHightAndWidth(cv::Size2i Size = cv::Size2i(720,1280)){
     if((cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_FRAME_HEIGHT,Size.height) == 0) &&
         (cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_FRAME_WIDTH,Size.width) == 0)){
         this->CameraConfigure.Size = Size;
-        qDebug() << "Frame size set OK." << endl;
+        qDebug() << "Frame size set OK.";
         return true;
     }
     else{
         this->CameraConfigure.Size.height = 720;
         this->CameraConfigure.Size.width = 1280;
-        qDebug() << "Frame size set Error." << endl;
+        qDebug() << "Frame size set Error.";
         return false;
     }
 }
@@ -244,7 +244,7 @@ void CameraControl::run(){
         fileName = fileName + QString(this->CameraNumber);
         fd = open(fileName.toStdString().data(),O_RDWR);
         if(fd == -1){
-            qDebug() << "Cannot Open Camera :" << this->CameraNumber << endl;
+            qDebug() << "Cannot Open Camera :" << this->CameraNumber;
         }else{
             setBrightness(32);
             setContrast(32);
@@ -253,10 +253,10 @@ void CameraControl::run(){
             setHightAndWidth();
             setWhiteBalance(32);
             if(myclose(fd)){
-                qDebug() << "Camera :" << this->CameraNumber << " closed" << endl;
+                qDebug() << "Camera :" << this->CameraNumber << " closed";
                 fd = 0;
             }else{
-                qDebug() << "Cannot close Camera :" << this->CameraNumber << " Please check." << endl;
+                qDebug() << "Cannot close Camera :" << this->CameraNumber << " Please check.";
                 myclose(fd);
                 fd = 0;
             }
@@ -271,6 +271,6 @@ void CameraControl::run(){
 }
 
 void CameraControl::onTimerUpdate(){
-    qDebug() << "Camera : " << this->CameraNumber << " get Timer timeout() Signal." << endl;
+    qDebug() << "Camera : " << this->CameraNumber << " get Timer timeout() Signal.";
     update.start(100);
 }

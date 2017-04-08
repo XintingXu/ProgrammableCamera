@@ -30,12 +30,14 @@ SOURCES += main.cpp\
         programmablecamera.cpp \
     CameraControl.cpp \
     handmode.cpp \
-    importmode.cpp
+    importmode.cpp \
+    controlcameracontrol.cpp
 
 HEADERS  += programmablecamera.h \
     CameraControl.h \
     handmode.h \
-    importmode.h
+    importmode.h \
+    controlcameracontrol.h
 
 FORMS    += programmablecamera.ui \
     handmode.ui \

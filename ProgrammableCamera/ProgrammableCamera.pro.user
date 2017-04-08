@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.5.1, 2017-04-07T22:10:10. -->
+<!-- Written by QtCreator 3.5.1, 2017-04-08T15:29:48. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -208,8 +208,8 @@
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinux.DirectUploadStep</value>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedFiles">
-       <value type="QString">/home/arm-dev/ProgrammableCamera/build-ProgrammableCamera-RaspberryPi-Release/ProgrammableCamera</value>
        <value type="QString">/home/arm-dev/ProgrammableCamera/build-ProgrammableCamera-RaspberryPi-Debug/ProgrammableCamera</value>
+       <value type="QString">/home/arm-dev/ProgrammableCamera/build-ProgrammableCamera-RaspberryPi-Release/ProgrammableCamera</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedHosts">
        <value type="QString">10.108.11.170</value>
@@ -224,8 +224,8 @@
        <value type="QString">/home/arm-dev/raspi/sysroot</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedTimes">
+       <value type="QDateTime">2017-04-08T10:36:04</value>
        <value type="QDateTime">2017-04-05T16:55:20</value>
-       <value type="QDateTime">2017-04-07T21:56:58</value>
       </valuelist>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles">false</value>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.Incremental">true</value>

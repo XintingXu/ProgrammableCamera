@@ -9,6 +9,7 @@
 #include <QMap>
 #include <QString>
 #include <QSignalMapper>
+#include <QOpenGLWidget>
 
 namespace Ui {
 class ProgrammableCamera;
@@ -58,16 +59,21 @@ private:
 
     QAction *actionAboutProject;
     QAction *actionAboutAuthor;
+    QAction *actionCleanConfigs;
+    QAction *actionCleanHandles;
 
     QAction *actionQuit;
     QAction *actionPowerOFF;
 
-    QLabel *labelCamera1;
-    QLabel *labelCamera2;
+    QOpenGLWidget *labelCamera1;
+    QOpenGLWidget *labelCamera2;
 
     QSignalMapper *signalsConfig;
     QSignalMapper *signalsHandle;
     QSignalMapper *signalsMode;
+
+    QString selectedConfig; //selected config file name,without '.ini',used to find file path by QMap
+    QString selectedHandle; //selected handle file name,used to find file path by QMap
 
 private slots:
     void onPressModeHand();
@@ -79,6 +85,9 @@ private slots:
     void onPressConfig(QString name);
     void onPressHandle(QString name);
     void onPressMode(QString name);
+
+    void onPressCleanConfig();
+    void onPressCleanHandle();
 };
 
 #endif // PROGRAMMABLECAMERA_H

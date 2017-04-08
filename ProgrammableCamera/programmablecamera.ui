@@ -32,7 +32,43 @@
    <string notr="true">alternate-background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLabel" name="labelCamera1">
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>230</y>
+      <width>421</width>
+      <height>211</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonOpenIR">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>230</y>
+      <width>141</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open IR</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonCapture">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>230</y>
+      <width>161</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Capture</string>
+    </property>
+   </widget>
+   <widget class="QOpenGLWidget" name="openGLWidget0">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -41,26 +77,8 @@
       <height>225</height>
      </rect>
     </property>
-    <property name="minimumSize">
-     <size>
-      <width>400</width>
-      <height>225</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>400</width>
-      <height>225</height>
-     </size>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(23, 199, 231);</string>
-    </property>
-    <property name="text">
-     <string>NULL</string>
-    </property>
    </widget>
-   <widget class="QLabel" name="labelCamera2">
+   <widget class="QOpenGLWidget" name="openGLWidget1">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -68,24 +86,6 @@
       <width>400</width>
       <height>225</height>
      </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>400</width>
-      <height>225</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>400</width>
-      <height>225</height>
-     </size>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(23, 199, 231);</string>
-    </property>
-    <property name="text">
-     <string>NULL</string>
     </property>
    </widget>
   </widget>
@@ -158,6 +158,8 @@
     </property>
     <addaction name="actionAboutProject"/>
     <addaction name="actionAboutAuthor"/>
+    <addaction name="actionCleanConfigs"/>
+    <addaction name="actionCleanHandles"/>
    </widget>
    <widget class="QMenu" name="menuQuit">
     <property name="title">
@@ -391,6 +393,16 @@
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+  </action>
+  <action name="actionCleanConfigs">
+   <property name="text">
+    <string>Clean Configs</string>
+   </property>
+  </action>
+  <action name="actionCleanHandles">
+   <property name="text">
+    <string>Clean Handles</string>
    </property>
   </action>
  </widget>
