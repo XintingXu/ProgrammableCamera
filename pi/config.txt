@@ -2,12 +2,14 @@
 # http://rpf.io/configtxtreadme
 # Some settings may impact device functionality. See link above for details
 
+disable_splash=1
+
 # uncomment if you get no picture on HDMI for a default "safe" mode
 #hdmi_safe=1
 
 # uncomment this if your display has a black border of unused pixels visible
 # and your display can output without overscan
-disable_overscan=1
+#disable_overscan=1
 
 # uncomment the following to adjust overscan. Use positive numbers if console
 # goes off screen, and negative if there is too much border
@@ -25,12 +27,13 @@ disable_overscan=1
 #hdmi_force_hotplug=1
 
 # uncomment to force a specific HDMI mode (this will force VGA)
-#hdmi_group=1
-#hdmi_mode=1
+hdmi_group=2
+hdmi_mode=87
+hdmi_cvt 800 480 60 6 0 0 0
 
 # uncomment to force a HDMI mode rather than DVI. This can make audio work in
 # DMT (computer monitor) modes
-#hdmi_drive=2
+hdmi_drive=1
 
 # uncomment to increase signal to HDMI, if you have interference, blanking, or
 # no display
@@ -41,8 +44,9 @@ disable_overscan=1
 
 #uncomment to overclock the arm. 700 MHz is the default.
 arm_freq=1300
-over_voltage=2
+over_voltage=4
 gpu_freq=450
+sdram_freq=480
 
 # Uncomment some or all of these to enable the optional hardware interfaces
 dtparam=i2c_arm=on
@@ -52,13 +56,13 @@ dtparam=i2c_arm=on
 # Uncomment this to enable the lirc-rpi module
 #dtoverlay=lirc-rpi
 dtoverlay=i2c-rtc,ds1307
+dtoverlay=pi3-disable-bt
+dtoverlay=pi3-disable-wifi
 
 # Additional overlays and parameters are documented /boot/overlays/README
 
 # Enable audio (loads snd_bcm2835)
-dtparam=audio=on
-#dtoverlay=vc4-kms-v3d
+#dtparam=audio=on
 
-
-#config max usb current
-max_usb_current=1;
+max_usb_current=1
+gpu_mem=256
