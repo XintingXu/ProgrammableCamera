@@ -7,6 +7,17 @@
 #include <QVector>
 #include <QList>
 #include <QMessageBox>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+#include <QOpenGLShaderProgram>
+#include <QImage>
+#include <QSharedMemory>
+#include <QBuffer>
+#include <QDataStream>
+#include <opencv2/opencv.hpp>
+#include <qimagewithiplimage.h>
+#include <wiringPi.h>
 
 extern bool turn_off;
 
@@ -18,15 +29,31 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::ProgrammableCamera)
 {
+    this->isHandling = false;
+    this->isExiting = false;
+
+    cameraControl = new ControlCameraControl;
+    this->CameraViewFinder.push_back(new getShortCut(0));
+    this->CameraViewFinder.push_back(new getShortCut(2));
+    this->CameraViewFinderTimer.push_back(new QTimer);
+    this->CameraViewFinderTimer.push_back(new QTimer);
+    connect(CameraViewFinder.at(0),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)));
+    connect(CameraViewFinder.at(1),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)));
+
     ui->setupUi(this);
 
     //Init pointers of UI elements
     initUIPointers();
 
+    logWidget->document()->setMaximumBlockCount(20);
+
     //connect UI signals with slot functions
-    connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()));
-    connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()));
-    connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()));
+    connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()),Qt::QueuedConnection);
+    connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()),Qt::QueuedConnection);
+    connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()),Qt::QueuedConnection);
+    connect(this,SIGNAL(startCapture()),cameraControl,SLOT(startCapture()),Qt::QueuedConnection);
+    connect(cameraControl,SIGNAL(captureDone(QList<IplImage*>*)),this,SLOT(onCaptureDone(QList<IplImage*>*)),Qt::QueuedConnection);
+    //connect(cameraControl,SIGNAL(updateUI(IplImage*,int)),this,SLOT(updateViewFinder(IplImage*,int)));
     //connect(actionPowerOFF,SIGNAL(triggered()),this,SLOT(onPressPowerOFF()));
 
     signalsConfig = new QSignalMapper(this);
@@ -35,15 +62,29 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     //search current file path to find any config files or executabale files
     setMenuItems();
 
-    connect(signalsConfig,SIGNAL(mapped(QString)),this,SLOT(onPressConfig(QString)));
-    connect(signalsHandle,SIGNAL(mapped(QString)),this,SLOT(onPressHandle(QString)));
-    connect(signalsMode,SIGNAL(mapped(QString)),this,SLOT(onPressMode(QString)));
+    connect(signalsConfig,SIGNAL(mapped(QString)),this,SLOT(onPressConfig(QString)),Qt::QueuedConnection);
+    connect(signalsHandle,SIGNAL(mapped(QString)),this,SLOT(onPressHandle(QString)),Qt::QueuedConnection);
+    connect(signalsMode,SIGNAL(mapped(QString)),this,SLOT(onPressMode(QString)),Qt::QueuedConnection);
 
-    connect(actionCleanConfigs,SIGNAL(triggered(bool)),this,SLOT(onPressCleanConfig()));
-    connect(actionCleanHandles,SIGNAL(triggered(bool)),this,SLOT(onPressCleanHandle()));
+    connect(actionCleanConfigs,SIGNAL(triggered(bool)),this,SLOT(onPressCleanConfig()),Qt::QueuedConnection);
+    connect(actionCleanHandles,SIGNAL(triggered(bool)),this,SLOT(onPressCleanHandle()),Qt::QueuedConnection);
+
+    CameraViewFinder.at(0)->start();
+    CameraViewFinder.at(1)->start();
+    CameraViewFinderTimer.at(0)->start(50);
+    CameraViewFinderTimer.at(1)->start(70);
+    connect(CameraViewFinderTimer.at(0),SIGNAL(timeout()),this,SLOT(updateViewTimerout0()));
+    connect(CameraViewFinderTimer.at(1),SIGNAL(timeout()),this,SLOT(updateViewTimerout1()));
+    connect(buttonIRControl,SIGNAL(clicked(bool)),this,SLOT(onPressButtonIRControl()));
+    connect(buttonCapture,SIGNAL(released()),this,SLOT(onPressButtonCapture()));
 }
 
 ProgrammableCamera::~ProgrammableCamera(){
+    CameraViewFinderTimer.at(0)->stop();
+    CameraViewFinderTimer.at(1)->stop();
+    CameraViewFinder.at(0)->exit();
+    CameraViewFinder.at(1)->exit();
+
     //free QMainWindow if it has been opened
     if(importMode != NULL){
         delete importMode;
@@ -59,6 +100,14 @@ ProgrammableCamera::~ProgrammableCamera(){
     delete signalsConfig;
     delete signalsHandle;
     delete signalsMode;
+
+    CameraViewFinder.at(0)->wait();
+    CameraViewFinder.at(1)->wait();
+
+    delete CameraViewFinder.at(0);
+    delete CameraViewFinder.at(1);
+    delete CameraViewFinderTimer.at(0);
+    delete CameraViewFinderTimer.at(1);
     delete ui;
 }
 
@@ -98,9 +147,13 @@ void ProgrammableCamera::initUIPointers(){
     this->actionPowerOFF = ui->actionPowerOFF;
 
     //pointers of OpenGLWidgets to show images
-    this->labelCamera1 = ui->openGLWidget0;
-    this->labelCamera2 = ui->openGLWidget1;
+    this->labelCamera1 = ui->labelCamera1;
+    this->labelCamera2 = ui->labelCamera2;
 
+    this->logWidget = ui->textBrowser;
+
+    this->buttonIRControl = ui->pushButtonOpenIR;
+    this->buttonCapture = ui->pushButtonCapture;
 }
 
 void ProgrammableCamera::onPressModeHand(){
@@ -124,18 +177,33 @@ void ProgrammableCamera::onPressModeImport(){
 
 void ProgrammableCamera::onPressConfig(QString name){
     qDebug() << "Config choose : " << name;
-    this->selectedConfig = name;
+    if(!this->cameraControl->isCapturing){
+        this->selectedConfig = name;
+        this->logText("choosing config :" + name);
+    }else{
+        this->logText("System is capturing");
+    }
 }
 
 void ProgrammableCamera::onPressHandle(QString name){
     qDebug() << "Handle choose : " << name;
-    this->selectedHandle = name;
+    if(!isHandling){
+        this->selectedHandle = name;
+        this->logText("choosing handle :" + name);
+    }else{
+        this->logText("System is Handling");
+    }
 }
 
 void ProgrammableCamera::onPressMode(QString name){
     qDebug() << "Mode choose : " << name;
-    this->selectedConfig = name;
-    this->selectedHandle = name;
+    if(!isHandling){
+        this->selectedConfig = name;
+        this->selectedHandle = name;
+        this->logText("choosing mode :" + name);
+    }else{
+        this->logText("System is Handling");
+    }
 }
 
 void ProgrammableCamera::onPressCleanConfig(){
@@ -148,11 +216,13 @@ void ProgrammableCamera::onPressCleanConfig(){
     int ret = message.exec();
     if(ret == QMessageBox::Yes){
         QString commandline = "rm -rf " + QApplication::applicationDirPath() + "/config/*";
-        system(commandline.toStdString().data());
-        qDebug() << "Config files has been deleted.";
+        if(system(commandline.toStdString().data()) == 0){
+            qDebug() << "Config files has been deleted.";
+        }
     }else{
         qDebug() << "Config files will not be deleted.";
     }
+    this->setMenuItems();
 }
 
 void ProgrammableCamera::onPressCleanHandle(){
@@ -165,15 +235,18 @@ void ProgrammableCamera::onPressCleanHandle(){
     int ret = message.exec();
     if(ret == QMessageBox::Yes){
         QString commandline = "rm -rf " + QApplication::applicationDirPath() + "/handle/*";
-        system(commandline.toStdString().data());
-        qDebug() << "Handle files has been deleted.";
+        if(system(commandline.toStdString().data()) == 0){
+            qDebug() << "Handle files has been deleted.";
+        }
     }else{
         qDebug() << "Handle files will not be deleted.";
     }
+    this->setMenuItems();
 }
 
 void ProgrammableCamera::onPressQuit(){
     //exit System
+    this->isExiting = true;
     turn_off = false;
     QApplication::quit();
 }
@@ -184,6 +257,120 @@ void ProgrammableCamera::onPressPowerOFF(){
     QApplication::quit();
 }
 
+void ProgrammableCamera::onHandleDone(){
+    this->isHandling = false;
+}
+
+void ProgrammableCamera::updateViewTimerout0(){
+    if(!CameraViewFinder.at(0)->isRunning()){
+        CameraViewFinder.at(0)->start();
+    }
+    CameraViewFinderTimer.at(0)->start(30);
+
+}
+
+void ProgrammableCamera::updateViewTimerout1(){
+    if(!CameraViewFinder.at(1)->isRunning()){
+        CameraViewFinder.at(1)->start();
+    }
+    CameraViewFinderTimer.at(1)->start(30);
+}
+
+void ProgrammableCamera::updateViewFinder(QImage image,int cameraNumber){
+    if(image.byteCount() == 0){
+        qDebug() << "UI get NULL img pointer.";
+    }else{
+        if((cameraNumber >> 1) == 0){
+            this->labelCamera1->setPixmap(QPixmap::fromImage(image));
+        }else{
+            this->labelCamera2->setPixmap(QPixmap::fromImage(image));
+        }
+    }
+}
+
+void ProgrammableCamera::capture(){
+    if(this->isCapturing){
+        logText("Wait for the former Capture.");
+    }else{
+        this->isCapturing = true;
+        emit startCapture();
+    }
+}
+
+void ProgrammableCamera::onCaptureDone(QList<IplImage *> *captured){
+    QSharedMemory shareCapture;
+    shareCapture.setKey("ProgrammableCameraCaptures");
+    shareCapture.lock();
+    if(shareCapture.isAttached()){
+        shareCapture.detach();
+    }
+
+    int size = 0;
+    QBuffer buffer;
+    buffer.open(QBuffer::ReadWrite);
+    QDataStream stream(&buffer);
+    QList<QImage> images;
+    for(int i = 0 ; i < captured->length() ; i++){
+        IplImage *img = captured->first();
+        QImage * result = IplImageToQImage(img);
+        images.push_back(*result);
+        captured->removeFirst();
+        cvReleaseImage(&img);
+    }
+
+    stream << images;
+    size = buffer.size();
+
+    if(shareCapture.create(size,QSharedMemory::ReadOnly)){
+        if(!shareCapture.lock()){
+            qDebug() << "Lock Error :" << shareCapture.errorString();
+        }else{
+            char * to = (char *)shareCapture.data();
+            const char * from = buffer.data().data();
+            memcpy(to,from,qMin(shareCapture.size(),size));
+
+            shareCapture.unlock();
+        }
+    }else{
+        qDebug() << "Cannot creat share memory of Captured images." << shareCapture.errorString();
+        logText("cannot create share memory");
+    }
+
+    this->isCapturing = false;
+
+    this->buttonCapture->setEnabled(true);
+}
+
+
+void ProgrammableCamera::onPressButtonIRControl(){
+    if(this->buttonIRControl->text() == "Open IR"){
+        qDebug() << "Open IR LED.";
+
+        digitalWrite(22,1);
+
+        this->buttonIRControl->setText("Close IR");
+        this->buttonIRControl->repaint();
+    }else{
+        qDebug() << "Close IR LED.";
+
+        digitalWrite(22,0);
+
+        this->buttonIRControl->setText("Open IR");
+        this->buttonIRControl->repaint();
+    }
+}
+
+void ProgrammableCamera::onPressButtonCapture(){
+    qDebug() << "is Capturing";
+    this->buttonCapture->setEnabled(false);
+    //this->buttonCapture->setEnabled(true);
+}
+
+
+void ProgrammableCamera::logText(QString textMessage){
+    logWidget->append(textMessage);
+    logWidget->moveCursor(QTextCursor::End);
+}
 
 void ProgrammableCamera::readConfig(){
     //search config files in current path
@@ -331,4 +518,38 @@ void ProgrammableCamera::setMenuItems(){
     }else{
         qDebug() << "There is no config and handle files";
     }
+}
+
+
+CameraViewQOpenGLWidget::CameraViewQOpenGLWidget(QWidget *parent):QOpenGLWidget(parent){
+    ;
+}
+
+CameraViewQOpenGLWidget::~CameraViewQOpenGLWidget(){
+    vbo.destroy();
+}
+
+void CameraViewQOpenGLWidget::initializeGL(){
+    initializeOpenGLFunctions();
+    glClearColor(0,0,0,1);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+}
+
+void CameraViewQOpenGLWidget::paintGL(){
+    QColor clearColor = Qt::black;
+    glClearColor(clearColor.redF(),clearColor.greenF(),clearColor.blueF(),clearColor.alphaF());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void CameraViewQOpenGLWidget::updateImage(IplImage * image){
+    if(texture != NULL){
+        delete texture;
+        texture = NULL;
+    }
+
+    texture = new QOpenGLTexture(QImage(image->imageData));
+    vbo.create();
+    vbo.bind();
+    paintGL();
 }

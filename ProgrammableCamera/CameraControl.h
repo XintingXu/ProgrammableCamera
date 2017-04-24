@@ -15,19 +15,24 @@
 #include <sys/mman.h>
 #include <QTimerEvent>
 #include <QTimer>
+#include <QList>
+#include <QSemaphore>
+#include "qimagewithiplimage.h"
 
 
 struct CameraControlValue{		//摄像头参数结构体
-    cv::Size2i Size;	//照片的分辨率
-    int Brightness;		//拍照时的亮度
-    int Contrast;		//拍照时的对比度
-    int Saturation;		//拍照时的色饱和度
-    int Tone;			//拍照时的色调
-    int Resolution;		//拍照时的清晰度
-    double Gamma;		//拍照时的Gamma值
-    int WhiteBalance;	//拍照时的白平衡
-    int Exposure;		//拍照时的曝光度
+    cv::Size2i Size=cv::Size2i(720,1280);	//照片的分辨率
+    int Brightness = -8193;		//拍照时的亮度
+    int Contrast = 57343;		//拍照时的对比度
+    int Saturation = 57343;		//拍照时的色饱和度
+    int Hue = -8193;			//拍照时的色调
+    int Resolution = 57343;		//拍照时的清晰度
+    int Gamma = 57343;		//拍照时的Gamma值
+    int WhiteBalance = 0;	//拍照时的白平衡
+    int Exposure = 0;		//拍照时的曝光度
 };
+
+class getShortCut;
 
 /*
  *
@@ -57,15 +62,16 @@ private:
     int fd;                 //file handle
     CvCapture *CameraCapture;
     bool isUsed = false;
-    QTimer update;
-
-    void run();
+    //QTimer update;
+    //getShortCut * getImageShourtCut;
 
 private slots:
     void onTimerUpdate();
+    //void updateUICamera(IplImage *,int);
 
 public:
     CameraControlValue CameraConfigure;
+    volatile QList<IplImage *> captured;
 
     CameraControl(int CameraNumber);		//构造函数
     ~CameraControl();						//析构函数
@@ -73,14 +79,34 @@ public:
     bool setBrightness(int Brightness);		//设定拍照时的亮度，返回值为bool
     bool setContrast(int Contrast);			//设定拍照时的对比度，返回值为bool
     bool setSaturation(int Saturation);		//设定拍照时的色饱和度，返回值为bool
-    bool setTone(int Tone);					//设定拍照时的色调，返回值为bool
+    bool setHue(int Hue);					//设定拍照时的色调，返回值为bool
     bool setResolution(int Resolution);		//设定拍照时的清晰度，返回值为bool
-    bool setGamma(double Gamma);			//设定拍照时的Gamma值，返回值为bool
+    bool setGamma(int Gamma);			//设定拍照时的Gamma值，返回值为bool
     bool setWhiteBalance(int WhiteBalance);	//设定拍照时的白平衡，返回值为bool
     bool setExposure(int Exposure);			//设定拍照时的曝光度，返回值为bool
     bool setHightAndWidth(cv::Size2i Size);	//设定拍照时的分辨率，返回值为bool
     bool setConfighration();
+
+    int getCameraNumber();
+    QSemaphore *QsemTimeout;
+
+    void run();
+signals:
+    void haveCaptured(CameraControl *);
+    //void updateUI(IplImage *,int);
 };
 
+class getShortCut:public QThread{
+    Q_OBJECT
+public:
+    void run();
+    getShortCut(int CameraNumber);
+    ~getShortCut();
+private:
+    int CameraNUmber;
+    QImage image;
+signals:
+    void updateUI(QImage,int);
+};
 
 #endif // CAMERACONTROL_H

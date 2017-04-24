@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>ProgrammableCamera</class>
  <widget class="QMainWindow" name="ProgrammableCamera">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -32,16 +35,6 @@
    <string notr="true">alternate-background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QListWidget" name="listWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>230</y>
-      <width>421</width>
-      <height>211</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButtonOpenIR">
     <property name="geometry">
      <rect>
@@ -68,7 +61,17 @@
      <string>Capture</string>
     </property>
    </widget>
-   <widget class="QOpenGLWidget" name="openGLWidget0">
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>230</y>
+      <width>391</width>
+      <height>211</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCamera1">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -77,8 +80,11 @@
       <height>225</height>
      </rect>
     </property>
+    <property name="text">
+     <string>NULL</string>
+    </property>
    </widget>
-   <widget class="QOpenGLWidget" name="openGLWidget1">
+   <widget class="QLabel" name="labelCamera2">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -86,6 +92,9 @@
       <width>400</width>
       <height>225</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>NULL</string>
     </property>
    </widget>
   </widget>

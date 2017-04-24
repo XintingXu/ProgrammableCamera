@@ -24,8 +24,8 @@ ImportMode::ImportMode(QWidget *parent) :
 
     ui->setupUi(this);
 
-    connect(ui->buttonBox,SIGNAL(accepted()),this,SLOT(acceptPressed()));
-    connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(rejectPressed()));
+    connect(ui->buttonBox,SIGNAL(accepted()),this,SLOT(acceptPressed()),Qt::QueuedConnection);
+    connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(rejectPressed()),Qt::QueuedConnection);
 
     QMap <QString,QString> ::iterator it;
     for(it = readConfigName.begin() ; it != readConfigName.end() ; it++){
@@ -65,7 +65,9 @@ void ImportMode::acceptPressed(){
             qDebug() << "files copied.";
             if(!handleFile.setPermissions(QFile::ExeGroup | QFile::ExeUser | QFile::ExeOwner)){
                 QString comand = "sudo chmod +x " + QApplication::applicationDirPath() + "/handle/*";
-                system(comand.toStdString().data());
+                if(system(comand.toStdString().data()) == 0){
+                    qDebug() << "Handle files made executable.";
+                }
             }
             qDebug() << "Have moved config and handle files.";
 

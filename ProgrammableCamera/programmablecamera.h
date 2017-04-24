@@ -10,6 +10,14 @@
 #include <QString>
 #include <QSignalMapper>
 #include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include <QOpenGLBuffer>
+#include <QWidget>
+#include <QTextBrowser>
+#include <QOpenGLTexture>
+#include <controlcameracontrol.h>
+
+//QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
 namespace Ui {
 class ProgrammableCamera;
@@ -24,6 +32,7 @@ public:
     ~ProgrammableCamera();
     HandMode *handMode = NULL;
     ImportMode *importMode = NULL;
+    volatile bool isExiting;
 
 private:
     Ui::ProgrammableCamera *ui;
@@ -65,15 +74,27 @@ private:
     QAction *actionQuit;
     QAction *actionPowerOFF;
 
-    QOpenGLWidget *labelCamera1;
-    QOpenGLWidget *labelCamera2;
+    QLabel *labelCamera1;
+    QLabel *labelCamera2;
 
     QSignalMapper *signalsConfig;
     QSignalMapper *signalsHandle;
     QSignalMapper *signalsMode;
 
+    QTextBrowser *logWidget;
+
     QString selectedConfig; //selected config file name,without '.ini',used to find file path by QMap
-    QString selectedHandle; //selected handle file name,used to find file path by QMap
+    QString selectedHandle;//selected handle file name,used to find file path by QMap
+
+    volatile bool isHandling;
+    bool isCapturing;
+
+    ControlCameraControl *cameraControl;
+    QVector <getShortCut *> CameraViewFinder;
+    QVector <QTimer *> CameraViewFinderTimer;
+
+    QPushButton *buttonIRControl;
+    QPushButton *buttonCapture;
 
 private slots:
     void onPressModeHand();
@@ -88,6 +109,63 @@ private slots:
 
     void onPressCleanConfig();
     void onPressCleanHandle();
+
+    void onPressButtonIRControl();
+    void onPressButtonCapture();
+
+    void capture();
+
+    void updateViewFinder(QImage,int);
+    void updateViewTimerout0();
+    void updateViewTimerout1();
+
+public slots:
+    void onHandleDone();
+    void logText(QString);
+    void onCaptureDone(QList<IplImage*>*);
+signals:
+    void startCapture();
+};
+
+class CameraViewQOpenGLWidget:public QOpenGLWidget,protected QOpenGLFunctions{
+    Q_OBJECT
+public:
+    CameraViewQOpenGLWidget(QWidget *parent = 0);
+    ~CameraViewQOpenGLWidget();
+
+protected:
+    void initializeGL();
+    void paintGL();
+
+private:
+    QOpenGLBuffer vbo;
+    QOpenGLTexture *texture;
+
+public slots:
+    void updateImage(IplImage *);
+};
+
+class HandleControl:public QThread{
+    Q_OBJECT
+public:
+    HandleControl();
+    ~HandleControl();
+    void run();
+    void setCurrentHandlePath(QString);
+private:
+    QString currentHandlePath;
+};
+
+class SaveControl:public QThread{
+    Q_OBJECT
+public:
+    SaveControl();
+    ~SaveControl();
+    void run();
+    void setSaveMode(QString);
+private:
+    int saveMode;
+    QMap<QString,int> mapOfMode;
 };
 
 #endif // PROGRAMMABLECAMERA_H
