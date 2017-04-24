@@ -23,6 +23,19 @@ namespace Ui {
 class ProgrammableCamera;
 }
 
+class GPIOInterruptJudge:public QThread{
+    Q_OBJECT
+public:
+    GPIOInterruptJudge(int ,QSemaphore *);
+    void run();
+    volatile bool isExiting;
+private :
+    int pinNumber;
+    QSemaphore *judgeSemaphore;
+signals:
+    void getSignal();
+};
+
 class ProgrammableCamera : public QMainWindow
 {
     Q_OBJECT
@@ -87,7 +100,7 @@ private:
     QString selectedHandle;//selected handle file name,used to find file path by QMap
 
     volatile bool isHandling;
-    bool isCapturing;
+    volatile bool isCapturing;
 
     ControlCameraControl *cameraControl;
     QVector <getShortCut *> CameraViewFinder;
@@ -95,6 +108,8 @@ private:
 
     QPushButton *buttonIRControl;
     QPushButton *buttonCapture;
+
+    GPIOInterruptJudge *GPIOINterruptCapture;
 
 private slots:
     void onPressModeHand();
@@ -112,8 +127,6 @@ private slots:
 
     void onPressButtonIRControl();
     void onPressButtonCapture();
-
-    void capture();
 
     void updateViewFinder(QImage,int);
     void updateViewTimerout0();

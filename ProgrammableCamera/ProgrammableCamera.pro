@@ -49,6 +49,7 @@ FORMS    += programmablecamera.ui \
 INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
 INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 INCLUDEPATH += $$[QT_SYSROOT]/usr/opencv-arm/include
+INCLUDEPATH += $$[QT_SYSROOT]/usr/include/c++/4.9
 
 if(contains(DEFINES,RPI)){
     LIBS += /usr/local/opencv-arm/lib/libopencv_*
