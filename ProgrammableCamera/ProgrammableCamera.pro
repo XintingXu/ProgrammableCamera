@@ -22,8 +22,8 @@ unix{
     QMAKE_CXXFLAGS_DEBUG -= -O2
     QMAKE_CXXFLAGS_DEBUG -= -O3
     QMAKE_CXXFLAGS_RELEASE -= -O1
-    QMAKE_CXXFLAGS_RELEASE += -O2
-    QMAKE_CXXFLAGS_RELEASE -= -O3
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE += -O3
 }
 
 SOURCES += main.cpp\
@@ -46,14 +46,10 @@ FORMS    += programmablecamera.ui \
     handmode.ui \
     importmode.ui
 
-INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
-INCLUDEPATH += $$[QT_SYSROOT]/usr/include
-INCLUDEPATH += $$[QT_SYSROOT]/usr/opencv-arm/include
-INCLUDEPATH += $$[QT_SYSROOT]/usr/include/c++/4.9
+INCLUDEPATH += /usr/local/opencv-arm/include
 
 if(contains(DEFINES,RPI)){
-    LIBS += /usr/local/opencv-arm/lib/libopencv_*
-    LIBS += -L$$[QT_SYSROOT]/usr/lib -lwiringPi
+    LIBS += -L/usr/local/opencv-arm/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_videoio -lopencv_imgcodecs -lopencv_photo
 }else{
-    LIBS += /usr/local/lib/libopencv_*
+    LIBS += -L/usr/local/opencv-pc/lib -lopencv_core -lopencv_highgui -lopencv_imgproc
 }

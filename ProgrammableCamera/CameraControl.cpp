@@ -42,7 +42,7 @@ CameraControl::CameraControl(int CameraNumber = 0){
     //    if(this->CameraNumber == 0){
     //        this->QsemTimeout = new QSemaphore(0);
     //        this->getImageShourtCut = new getShortCut(this->CameraNumber);
-    //        connect(getImageShourtCut,SIGNAL(updateUI(IplImage*,int)),this,SLOT(updateUICamera(IplImage*,int)),Qt::QueuedConnection);
+    //        connect(getImageShourtCut,SIGNAL(updateUI(cv::Mat*,int)),this,SLOT(updateUICamera(cv::Mat*,int)),Qt::QueuedConnection);
     //        this->getImageShourtCut->isExiting = false;
     //        this->getImageShourtCut->timeout = this->QsemTimeout;
     //        update.setTimerType(Qt::PreciseTimer);
@@ -57,21 +57,7 @@ CameraControl::CameraControl(int CameraNumber = 0){
 
 //CameraControl的析构函数，释放内存
 CameraControl::~CameraControl(){
-    cvReleaseCapture(&CameraCapture);
-    pthread_exit(NULL);
-    //    this->update.stop();
-    //    this->getImageShourtCut->isExiting = true;
-    //    this->getImageShourtCut->exit();
-
-    if(QsemTimeout != NULL){
-        delete QsemTimeout;
-        QsemTimeout = NULL;
-    }
-    //    if(getImageShourtCut != NULL){
-    //        delete getImageShourtCut;
-    //        getImageShourtCut = NULL;
-    //    }
-    //    this->getImageShourtCut->wait();
+    //pthread_exit(NULL);
     qDebug("CameraControl of Camera : %d is deleted.",this->CameraNumber);
 }
 
@@ -82,20 +68,30 @@ int CameraControl::getCameraNumber(){
 
 //设定摄像头的编号，返回值为bool
 bool CameraControl::setCamera(int CameraNumber = 0){
-    cvReleaseCapture(&CameraCapture);
-    CameraCapture = cvCaptureFromCAM(CameraNumber);
-    if(CameraCapture != NULL){
+//    cvReleaseCapture(&CameraCapture);
+    CameraCapture = new cv::VideoCapture(CameraNumber);
+    if(CameraCapture->isOpened()){
         this->CameraNumber = CameraNumber;
         qDebug() << "Opened Camera : " << this->CameraNumber << " .";
+        CameraCapture->release();
+        delete CameraCapture;
+        this->CameraCapture = NULL;
         return true;
     }else{
         this->CameraNumber = 0;
-        CameraCapture = cvCaptureFromCAM(0);
-        if(CameraCapture != NULL){
+        CameraCapture = new cv::VideoCapture(0);
+        if(CameraCapture->isOpened()){
             qDebug() << "Opened the default camera 0.";
+            CameraCapture->release();
+            delete CameraCapture;
+            this->CameraCapture = NULL;
             return true;
         }else{
             qDebug() << "Cannot open default camera 0.";
+            if(CameraCapture != NULL){
+                delete CameraCapture;
+                this->CameraCapture = NULL;
+            }
             return false;
         }
     }
@@ -384,19 +380,23 @@ bool CameraControl::setExposure(int Exposure = 0){
 }
 
 //设定拍照时的分辨率，返回值为bool
+//unused
 bool CameraControl::setHightAndWidth(cv::Size2i Size = cv::Size2i(720,1280)){
-    if((cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_FRAME_HEIGHT,Size.height) == 0) &&
-            (cvSetCaptureProperty(CameraCapture,CV_CAP_PROP_FRAME_WIDTH,Size.width) == 0)){
-        this->CameraConfigure.Size = Size;
-        qDebug() << "Frame size set OK.";
-        return true;
-    }
-    else{
-        this->CameraConfigure.Size.height = 720;
-        this->CameraConfigure.Size.width = 1280;
-        qDebug() << "Frame size set Error.";
-        return false;
-    }
+//    this->CameraCapture = new cv::VideoCapture(this->CameraNumber);
+//    if((this->CameraCapture->set(CV_CAP_PROP_FRAME_HEIGHT,Size.height) == 0) &&
+//            (this->CameraCapture->set(CV_CAP_PROP_FRAME_WIDTH,Size.width) == 0)){
+//        this->CameraConfigure.Size = Size;
+//        qDebug() << "Frame size set OK.";
+//        return true;
+//    }
+//    else{
+//        this->CameraConfigure.Size.height = 720;
+//        this->CameraConfigure.Size.width = 1280;
+//        qDebug() << "Frame size set Error.";
+//        return false;
+//    }
+//    this->CameraCapture->release();
+    return true;
 }
 
 
@@ -416,7 +416,7 @@ void CameraControl::run(){
             setContrast(this->CameraConfigure.Contrast);
             setExposure(this->CameraConfigure.Exposure);
             setGamma(this->CameraConfigure.Gamma);
-            setHightAndWidth(this->CameraConfigure.Size);
+//            setHightAndWidth(this->CameraConfigure.Size);
             setWhiteBalance(this->CameraConfigure.WhiteBalance);
             setSaturation(this->CameraConfigure.Saturation);
             setHue(this->CameraConfigure.Hue);
@@ -428,7 +428,7 @@ void CameraControl::run(){
                 qDebug() << "Set Camera to be best quality.";
             }
 
-            if(myclose(fd)){
+            if(myclose(fd) == 0){
                 qDebug() << "Camera :" << this->CameraNumber << " closed";
                 fd = 0;
             }else{
@@ -437,35 +437,45 @@ void CameraControl::run(){
                 fd = 0;
             }
 
-            this->CameraCapture = cvCaptureFromCAM(this->CameraNumber);
-            IplImage *captureTemp = cvQueryFrame(CameraCapture);
-            ((QList<IplImage *> *) &captured)->push_back(captureTemp);
-            cvReleaseCapture(&CameraCapture);
+            this->CameraCapture = new cv::VideoCapture(this->CameraNumber);
+            this->CameraCapture->set(CV_CAP_PROP_FRAME_HEIGHT,this->CameraConfigure.Size.height);
+            this->CameraCapture->set(CV_CAP_PROP_FRAME_WIDTH,this->CameraConfigure.Size.width);
+            this->CameraCapture->grab();
+            cv::Mat captureTemp;
+            this->CameraCapture->read(captureTemp);
 
-            emit haveCaptured(this);
+            captured.push_back(captureTemp);
+            this->CameraCapture->release();
+
+            qDebug() << "CameraControl : run() : CameraCapture :" << this->CameraCapture;
+
+            delete this->CameraCapture;
+            this->CameraCapture = NULL;
+            qDebug() << "Quered one frame from :" << this->CameraNumber;
         }
     }else{
-        ;
+        qDebug() << "camera :" << this->CameraNumber << " isn't used";
     }
 
     //    this->update.start(100);
+    emit haveCaptured(this);
 }
 
-//void CameraControl::updateUICamera(IplImage *img,int number){
+//void CameraControl::updateUICamera(cv::Mat *img,int number){
 //    number = this->CameraNumber;
 //    emit this->updateUI(img,number);
 //}
 
-void CameraControl::onTimerUpdate(){
-    //qDebug() << "camera view :" << this->CameraNumber << " timeout.";
-    if(!this->isRunning()){
-        //qDebug() << "camera view :" << this->CameraNumber << " release().";
-        QsemTimeout->release(1);
-    }else{
-        QsemTimeout->acquire(QsemTimeout->available());
-    }
-    //    update.start(100);
-}
+//void CameraControl::onTimerUpdate(){
+//    //qDebug() << "camera view :" << this->CameraNumber << " timeout.";
+//    if(!this->isRunning()){
+//        //qDebug() << "camera view :" << this->CameraNumber << " release().";
+//        QsemTimeout->release(1);
+//    }else{
+//        QsemTimeout->acquire(QsemTimeout->available());
+//    }
+//    //    update.start(100);
+//}
 
 
 getShortCut::getShortCut(int CameraNumber){
@@ -480,7 +490,11 @@ void getShortCut::run(){
     //qDebug() << "camera :" << this->CameraNUmber << " onTimerUpdate() threadID :" << this->currentThreadId();
 
     cv::VideoCapture CameraCapture;
-    CameraCapture.open(this->CameraNUmber);
+
+    if(!CameraCapture.open(this->CameraNUmber)){
+        ;
+    }
+
     if(CameraCapture.isOpened()){
         CameraCapture.set(CV_CAP_PROP_FRAME_HEIGHT,360);
         CameraCapture.set(CV_CAP_PROP_FRAME_WIDTH,480);
@@ -489,15 +503,15 @@ void getShortCut::run(){
         CameraCapture.read(captured);
 
         cv::cvtColor(captured,captured,CV_BGR2RGB);
-        QImage get = QImage((uchar*)captured.data,captured.cols,captured.rows,captured.step,QImage::Format_RGB888);
+        cv::resize(captured,captured,cv::Size(400,225),0,0,CV_INTER_NN);
+        this->image = QImage((uchar*)captured.data,captured.cols,captured.rows,captured.step,QImage::Format_RGB888).copy();
 
-        this->image = get.scaled(400,225);
-
+        captured.release();
         CameraCapture.release();
 
         //qDebug() << "resize width:" << (this->image).width() << " height:" << (this->image).height();
 
-        emit updateUI((this->image),this->CameraNUmber);
+        emit updateUI((this->image).copy(),this->CameraNUmber);
     }else{
         qDebug() << "Cannot open Camera :" << this->CameraNUmber;
     }

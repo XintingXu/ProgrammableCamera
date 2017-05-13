@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QMap>
 #include <QSettings>
+#include <QMutex>
 
 using namespace std;
 
@@ -20,13 +21,14 @@ public:
     ControlCameraControl();
     ~ControlCameraControl();
     void run();
-    bool setConfigFile(QString *);
+    bool setConfigFile(QString );
     bool isExiting;
     bool isCapturing;
-    volatile QList<IplImage *> captured[4];
-    volatile QList<IplImage *> captureDoneImage;
+    QList<cv::Mat> captured[4];
+    QList<cv::Mat> captureDoneImage;
 
 private:
+    QMutex threadLock;
     QSettings *settingFile;
     CameraControl * camera[4];
     QMap <QString,int> mapOfCameraNumber;
@@ -43,15 +45,15 @@ private:
 
 private slots:
     void captureFinished(CameraControl *);
-    //    void updateUICamera(IplImage *,int);
+    //    void updateUICamera(cv::Mat *,int);
 public slots:
     void startCapture();
 
 signals:
     void handleDone();
-    void captureDone(QList<IplImage *>*);
+    void captureDone(QList<cv::Mat>*);
     void logText(QString);
-    //    void updateUI(IplImage *,int);
+    //    void updateUI(cv::Mat *,int);
 };
 
 #endif // CONTROLCAMERACONTROL

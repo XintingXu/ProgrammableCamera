@@ -7,17 +7,12 @@
 #include <QVector>
 #include <QList>
 #include <QMessageBox>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES2/gl2platform.h>
 #include <QOpenGLShaderProgram>
 #include <QImage>
 #include <QSharedMemory>
 #include <QBuffer>
 #include <QDataStream>
 #include <opencv2/opencv.hpp>
-#include <qimagewithiplimage.h>
-#include <wiringPi.h>
 
 extern bool turn_off;
 
@@ -25,27 +20,35 @@ QMap <QString,QString> currentConfig;   //store current config files K-V pair,li
 QMap <QString,QString> currentHandle;   //store current handle files K-V pair,like "HDR=/home/pi/ProgrammableCamera/handle/HDR"
 QVector <QString> currentMode;          //store current mode names
 
-QSemaphore getIntrrupt(0);
-
-void controlInterupt(){
-    getIntrrupt.acquire(getIntrrupt.available());
-    getIntrrupt.release(1);
-    qDebug() << "get Signal from WiringPi";
-}
-
 ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::ProgrammableCamera)
 {
+    system("./closeIR.sh");
+
+    selectedConfig = "default";
+    selectedHandle = "default";
+    selectedSave = "Save All";
+
     this->isHandling = false;
     this->isExiting = false;
     this->isCapturing = false;
 
     cameraControl = new ControlCameraControl;
+    cameraControl->setParent(this);
     this->CameraViewFinder.push_back(new getShortCut(0));
+    //for arm ,use 2
     this->CameraViewFinder.push_back(new getShortCut(2));
+    //for PC, use 1
+    //this->CameraViewFinder.push_back(new getShortCut(1));
     this->CameraViewFinderTimer.push_back(new QTimer);
     this->CameraViewFinderTimer.push_back(new QTimer);
+
+    for(int i = 0 ; i < 2 ; i++){
+        this->CameraViewFinder.at(i)->setParent(this);
+        this->CameraViewFinderTimer.at(i)->setParent(this);
+    }
+
     connect(CameraViewFinder.at(0),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)));
     connect(CameraViewFinder.at(1),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)));
 
@@ -61,8 +64,8 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()),Qt::QueuedConnection);
     connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()),Qt::QueuedConnection);
     connect(this,SIGNAL(startCapture()),cameraControl,SLOT(startCapture()),Qt::QueuedConnection);
-    connect(cameraControl,SIGNAL(captureDone(QList<IplImage*>*)),this,SLOT(onCaptureDone(QList<IplImage*>*)),Qt::QueuedConnection);
-    //connect(cameraControl,SIGNAL(updateUI(IplImage*,int)),this,SLOT(updateViewFinder(IplImage*,int)));
+    connect(cameraControl,SIGNAL(captureDone(QList<cv::Mat>*)),this,SLOT(onCaptureDone(QList<cv::Mat>*)),Qt::QueuedConnection);
+    //connect(cameraControl,SIGNAL(updateUI(cv::Mat*,int)),this,SLOT(updateViewFinder(cv::Mat*,int)));
     //connect(actionPowerOFF,SIGNAL(triggered()),this,SLOT(onPressPowerOFF()));
 
     signalsConfig = new QSignalMapper(this);
@@ -87,57 +90,80 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     connect(buttonIRControl,SIGNAL(clicked(bool)),this,SLOT(onPressButtonIRControl()),Qt::QueuedConnection);
     connect(buttonCapture,SIGNAL(released()),this,SLOT(onPressButtonCapture()),Qt::QueuedConnection);
 
-    if(wiringPiISR(28,INT_EDGE_RISING,&controlInterupt) < 0){
-        logText("Your capture button may init failed.");
-    }else{
-        qDebug() << "Capture Button init Done.";
-    }
+    handleControlThread = new HandleControl;
+    handleControlThread->setParent(this);
+    saveControlThread = new SaveControl;
+    saveControlThread->setParent(this);
+    connect(saveControlThread,SIGNAL(saveDone()),this,SLOT(onSaveDone()),Qt::QueuedConnection);
+    connect(handleControlThread,SIGNAL(handleDone()),this,SLOT(onHandleDone()),Qt::QueuedConnection);
 
-    GPIOINterruptCapture = new GPIOInterruptJudge(28,&getIntrrupt);
-    connect(GPIOINterruptCapture,SIGNAL(getSignal()),this,SLOT(onPressButtonCapture()),Qt::QueuedConnection);
-    GPIOINterruptCapture->start(QThread::TimeCriticalPriority);
+    connect(cameraControl,SIGNAL(logText(QString)),this,SLOT(logText(QString)),Qt::QueuedConnection);
 }
 
 ProgrammableCamera::~ProgrammableCamera(){
     CameraViewFinderTimer.at(0)->stop();
     CameraViewFinderTimer.at(1)->stop();
-    CameraViewFinder.at(0)->exit();
-    CameraViewFinder.at(1)->exit();
-    GPIOINterruptCapture->isExiting = true;
-    getIntrrupt.release();
-    GPIOINterruptCapture->exit();
 
-    //free QMainWindow if it has been opened
-    if(importMode != NULL){
-        delete importMode;
-        importMode = NULL;
-    }
+//    if(this->cameraControl != NULL){
+//        qDebug() << "~ProgrammableCamera : cameraControl : " << cameraControl;
+//        delete this->cameraControl;
+//        cameraControl = NULL;
+//    }
+//    //free QMainWindow if it has been opened
+//    if(importMode != NULL){
+//        qDebug() << "~ProgrammableCamera : importMode : " << importMode;
+//        delete importMode;
+//        importMode = NULL;
+//    }
 
-    //free QMainWindow if it has been opened
-    if(handMode != NULL){
-        delete handMode;
-        handMode = NULL;
-    }
+//    //free QMainWindow if it has been opened
+//    if(handMode != NULL){
+//        qDebug() << "~ProgrammableCamera : handMode : " << handMode;
+//        delete handMode;
+//        handMode = NULL;
+//    }
 
-    delete signalsConfig;
-    delete signalsHandle;
-    delete signalsMode;
-
-    if(this->GPIOINterruptCapture->isRunning()){
-        disconnect(GPIOINterruptCapture,SIGNAL(getSignal()),this,SLOT(onPressButtonCapture()));
-        getIntrrupt.release(1);
-        GPIOINterruptCapture->exit();
-    }
+//    qDebug() << "~ProgrammableCamera : signalsConfig : " << signalsConfig;
+//    delete signalsConfig;
+//    qDebug() << "~ProgrammableCamera : signalsHandle : " << signalsHandle;
+//    delete signalsHandle;
+//    qDebug() << "~ProgrammableCamera : signalsMode : " << signalsMode;
+//    delete signalsMode;
 
     CameraViewFinder.at(0)->wait();
     CameraViewFinder.at(1)->wait();
-    GPIOINterruptCapture->wait();
 
-    delete GPIOINterruptCapture;
-    delete CameraViewFinder.at(0);
-    delete CameraViewFinder.at(1);
-    delete CameraViewFinderTimer.at(0);
-    delete CameraViewFinderTimer.at(1);
+//    qDebug() << "~ProgrammableCamera : CameraViewFinder.at(0) : " << CameraViewFinder.at(0);
+//    getShortCut * toDelete = CameraViewFinder.at(0);
+//    delete toDelete;
+//    qDebug() << "~ProgrammableCamera : CameraViewFinder.at(1) : " << CameraViewFinder.at(1);
+//    toDelete = CameraViewFinder.at(1);
+//    delete toDelete;
+//    qDebug() << "~ProgrammableCamera : CameraViewFinderTimer.at(0) : " << CameraViewFinderTimer.at(0);
+//    QTimer * timerToDelete = CameraViewFinderTimer.at(0);
+//    delete timerToDelete;
+//    qDebug() << "~ProgrammableCamera : CameraViewFinderTimer.at(1) : " << CameraViewFinderTimer.at(1);
+//    timerToDelete = CameraViewFinderTimer.at(1);
+//    delete timerToDelete;
+
+//    while (this->addedActions.length() != 0) {
+//        if(this->MenuMode->actions().contains(this->addedActions.first())){
+//            this->MenuMode->removeAction(this->addedActions.first());
+//        }
+
+//        if(this->MenuConfig->actions().contains(this->addedActions.first())){
+//            this->MenuConfig->removeAction(this->addedActions.first());
+//        }
+
+//        if(this->MenuHandle->actions().contains(this->addedActions.first())){
+//            this->MenuHandle->removeAction(this->addedActions.first());
+//        }
+
+//        qDebug() << "~ProgrammableCamera : action : " << this->addedActions.first();
+//        delete this->addedActions.first();
+//        this->addedActions.removeFirst();
+//    }
+
     delete ui;
 }
 
@@ -278,17 +304,12 @@ void ProgrammableCamera::onPressQuit(){
     //exit System
     this->isExiting = true;
     turn_off = false;
-    QApplication::quit();
+    this->close();
 }
 
 void ProgrammableCamera::onPressPowerOFF(){
     //Power off the system
     turn_off = true;
-    QApplication::quit();
-}
-
-void ProgrammableCamera::onHandleDone(){
-    this->isHandling = false;
 }
 
 void ProgrammableCamera::updateViewTimerout0(){
@@ -296,7 +317,7 @@ void ProgrammableCamera::updateViewTimerout0(){
         CameraViewFinder.at(0)->start();
         CameraViewFinderTimer.at(0)->start(40);
     }else{
-        CameraViewFinderTimer.at(0)->start(10);
+        CameraViewFinderTimer.at(0)->start(30);
     }
 }
 
@@ -305,7 +326,7 @@ void ProgrammableCamera::updateViewTimerout1(){
         CameraViewFinder.at(1)->start();
         CameraViewFinderTimer.at(1)->start(40);
     }else{
-        CameraViewFinderTimer.at(1)->start(10);
+        CameraViewFinderTimer.at(1)->start(30);
     }
 }
 
@@ -321,57 +342,64 @@ void ProgrammableCamera::updateViewFinder(QImage image,int cameraNumber){
     }
 }
 
-void ProgrammableCamera::onCaptureDone(QList<IplImage *> *captured){
-    QSharedMemory shareCapture;
-    shareCapture.setKey("ProgrammableCameraCaptures");
-    shareCapture.lock();
-    if(shareCapture.isAttached()){
-        shareCapture.detach();
-    }
+void ProgrammableCamera::onCaptureDone(QList<cv::Mat> *captured){
+    this->threadLock.lock();
+    this->isCapturing = false;
+    QString command;
+    command.sprintf("rm temp_images/%s*",selectedHandle.toStdString().data());
+    system(command.toStdString().data());
 
-    int size = 0;
-    QBuffer buffer;
-    buffer.open(QBuffer::ReadWrite);
-    QDataStream stream(&buffer);
-    QList<QImage> images;
     for(int i = 0 ; i < captured->length() ; i++){
-        IplImage *img = captured->first();
-        QImage * result = IplImageToQImage(img);
-        images.push_back(*result);
+        cv::Mat toSave;
+        captured->first().copyTo(toSave);
+        QString fileName;
+        fileName.sprintf("temp_images/%s%d.jpg",selectedHandle.toStdString().data(),i + 1);
+        cv::imwrite(fileName.toStdString().data(),toSave);
+
         captured->removeFirst();
-        cvReleaseImage(&img);
+        toSave.release();
     }
 
-    stream << images;
-    size = buffer.size();
-
-    if(shareCapture.create(size,QSharedMemory::ReadOnly)){
-        if(!shareCapture.lock()){
-            qDebug() << "Lock Error :" << shareCapture.errorString();
-        }else{
-            char * to = (char *)shareCapture.data();
-            const char * from = buffer.data().data();
-            memcpy(to,from,qMin(shareCapture.size(),size));
-
-            shareCapture.unlock();
-        }
-    }else{
-        qDebug() << "Cannot creat share memory of Captured images." << shareCapture.errorString();
-        logText("cannot create share memory");
-    }
+    captured->clear();
 
     this->isCapturing = false;
-
-    this->buttonCapture->setEnabled(true);
     logText("capture done");
+
+    command.clear();
+    command.sprintf("rm images/%s*",selectedHandle.toStdString().data());
+    system(command.toStdString().data());
+
+    this->handleControlThread->setCurrentHandlePath(currentHandle[selectedHandle]);
+    this->handleControlThread->start();
+
+    CameraViewFinderTimer.at(0)->start(30);
+    CameraViewFinderTimer.at(1)->start(50);
+
+    CameraViewFinder.at(0)->start();
+    CameraViewFinder.at(1)->start();
+
+    threadLock.unlock();
 }
 
+void ProgrammableCamera::onHandleDone(){
+    emit logText("Handle done");
+    this->isHandling = false;
+    this->saveControlThread->setSaveMode(selectedSave);
+    this->saveControlThread->start();
+}
+
+void ProgrammableCamera::onSaveDone(){
+    emit logText("Save done");
+    this->buttonCapture->setEnabled(true);
+}
 
 void ProgrammableCamera::onPressButtonIRControl(){
+    threadLock.lock();
+
     if(this->buttonIRControl->text() == "Open IR"){
         qDebug() << "Open IR LED.";
 
-        digitalWrite(22,1);
+        system("./openIR.sh");
 
         this->buttonIRControl->setText("Close IR");
         this->buttonIRControl->repaint();
@@ -379,26 +407,43 @@ void ProgrammableCamera::onPressButtonIRControl(){
     }else{
         qDebug() << "Close IR LED.";
 
-        digitalWrite(22,0);
+        system("./closeIR.sh");
 
         this->buttonIRControl->setText("Open IR");
         this->buttonIRControl->repaint();
         logText("Close IR LED.");
     }
+
+    threadLock.unlock();
 }
 
 void ProgrammableCamera::onPressButtonCapture(){
+    threadLock.lock();
+
     if(this->isCapturing){
         logText("Wait for the former Capture.");
     }else{
         logText("Capture Button is Pressed.");
         this->isCapturing = true;
         this->buttonCapture->setEnabled(false);
-        //emit startCapture();
-        this->buttonCapture->setEnabled(true);
+
+        CameraViewFinderTimer.at(0)->stop();
+        CameraViewFinderTimer.at(1)->stop();
+
+        CameraViewFinder.at(0)->exit();
+        CameraViewFinder.at(1)->exit();
+
+        if(this->cameraControl->setConfigFile(currentConfig[selectedConfig])){
+            qDebug() << "ProgrammableCamera start startCapture";
+            this->cameraControl->start(QThread::TimeCriticalPriority);
+        }else{
+            this->buttonCapture->setEnabled(true);
+        }
     }
     qDebug() << "Capture Button is Pressed.";
-    this->isCapturing = false;
+    this->isCapturing = true;
+
+    threadLock.unlock();
 }
 
 
@@ -420,7 +465,7 @@ void ProgrammableCamera::readConfig(){
             qDebug() << "current config path cannot find any .ini files.";
         }else{
             for (int i = list.length() - 1 ; i >= 0  ; i--){
-                currentConfig.insert(list.at(i).baseName(),list.at(i).absoluteFilePath());
+                currentConfig.insert(list.at(i).baseName().toLower(),list.at(i).absoluteFilePath());
                 qDebug() << "find .ini " << list.at(i).baseName();
             }
             qDebug() << "have found : " << list.length() << " .ini files";
@@ -442,7 +487,7 @@ void ProgrammableCamera::readHandle(){
             qDebug() << "current handle path cannot find any executable files.";
         }else{
             for (int i = list.length() - 1 ; i >= 0 ; i--){
-                currentHandle.insert(list.at(i).baseName(),list.at(i).absoluteFilePath());
+                currentHandle.insert(list.at(i).baseName().toLower(),list.at(i).absoluteFilePath());
                 qDebug() << "find handle " << list.at(i).baseName();
             }
             qDebug() << "have found : " << list.length() << " handle files";
@@ -474,7 +519,9 @@ void ProgrammableCamera::setMenuItems(){
             }
             if(!haveFound){
                 QAction *added = MenuConfig->addAction(it.key());
+                added->setParent(this);
                 signalsConfig->setMapping(added,it.key());
+                this->addedActions.push_back(added);
                 connect(added,SIGNAL(triggered()),signalsConfig,SLOT(map()));
             }else{
                 ;
@@ -499,7 +546,9 @@ void ProgrammableCamera::setMenuItems(){
 
             if(!haveFound){
                 QAction *added = MenuHandle->addAction(it.key());
+                added->setParent(this);
                 signalsHandle->setMapping(added,it.key());
+                this->addedActions.push_back(added);
                 connect(added,SIGNAL(triggered()),signalsHandle,SLOT(map()));
             }else{
                 ;
@@ -543,7 +592,9 @@ void ProgrammableCamera::setMenuItems(){
                 }
                 if(!haveFound){
                     QAction * added = MenuMode->addAction(currentMode.at(i));
+                    added->setParent(this);
                     signalsMode->setMapping(added,currentMode.at(i));
+                    this->addedActions.push_back(added);
                     connect(added,SIGNAL(triggered()),signalsMode,SLOT(map()));
                 }
             }
@@ -552,56 +603,5 @@ void ProgrammableCamera::setMenuItems(){
         }
     }else{
         qDebug() << "There is no config and handle files";
-    }
-}
-
-
-CameraViewQOpenGLWidget::CameraViewQOpenGLWidget(QWidget *parent):QOpenGLWidget(parent){
-    ;
-}
-
-CameraViewQOpenGLWidget::~CameraViewQOpenGLWidget(){
-    vbo.destroy();
-}
-
-void CameraViewQOpenGLWidget::initializeGL(){
-    initializeOpenGLFunctions();
-    glClearColor(0,0,0,1);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-}
-
-void CameraViewQOpenGLWidget::paintGL(){
-    QColor clearColor = Qt::black;
-    glClearColor(clearColor.redF(),clearColor.greenF(),clearColor.blueF(),clearColor.alphaF());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void CameraViewQOpenGLWidget::updateImage(IplImage * image){
-    if(texture != NULL){
-        delete texture;
-        texture = NULL;
-    }
-
-    texture = new QOpenGLTexture(QImage(image->imageData));
-    vbo.create();
-    vbo.bind();
-    paintGL();
-}
-
-GPIOInterruptJudge::GPIOInterruptJudge(int pinNumber, QSemaphore *interruptSemaphore){
-    this->pinNumber = pinNumber;
-    this->judgeSemaphore = interruptSemaphore;
-    this->isExiting = false;
-}
-
-void GPIOInterruptJudge::run(){
-    qDebug() << "GPIO Interrupt run() is running.";
-
-    while(!this->isExiting){
-        this->judgeSemaphore->acquire(1);
-        qDebug() << "Interrupt get Signal.";
-        emit getSignal();
-        this->judgeSemaphore->acquire(judgeSemaphore->available());
     }
 }

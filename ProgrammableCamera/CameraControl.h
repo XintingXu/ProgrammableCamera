@@ -3,7 +3,6 @@
 
 #include <QThread>
 #include <opencv2/opencv.hpp>
-#include <opencv2/ocl/ocl.hpp>
 #include <QDebug>
 #include <iostream>
 #include <pthread.h>
@@ -17,8 +16,7 @@
 #include <QTimer>
 #include <QList>
 #include <QSemaphore>
-#include "qimagewithiplimage.h"
-
+#include <QImage>
 
 struct CameraControlValue{		//摄像头参数结构体
     cv::Size2i Size=cv::Size2i(720,1280);	//照片的分辨率
@@ -60,18 +58,17 @@ private:
     int CameraNumber;		//摄像头的编号
     cpu_set_t setMask;      //mask used to configure which cpu to run
     int fd;                 //file handle
-    CvCapture *CameraCapture;
-    bool isUsed = false;
+    cv::VideoCapture *CameraCapture;
     //QTimer update;
     //getShortCut * getImageShourtCut;
 
 private slots:
-    void onTimerUpdate();
-    //void updateUICamera(IplImage *,int);
+//    void onTimerUpdate();
+    //void updateUICamera(cv::Mat *,int);
 
 public:
     CameraControlValue CameraConfigure;
-    volatile QList<IplImage *> captured;
+    QList<cv::Mat> captured;
 
     CameraControl(int CameraNumber);		//构造函数
     ~CameraControl();						//析构函数
@@ -88,12 +85,12 @@ public:
     bool setConfighration();
 
     int getCameraNumber();
-    QSemaphore *QsemTimeout;
+    volatile bool isUsed = false;
 
     void run();
 signals:
     void haveCaptured(CameraControl *);
-    //void updateUI(IplImage *,int);
+    //void updateUI(cv::Mat *,int);
 };
 
 class getShortCut:public QThread{
