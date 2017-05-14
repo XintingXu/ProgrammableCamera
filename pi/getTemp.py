@@ -8,7 +8,7 @@ file = open("/sys/class/thermal/thermal_zone0/temp")
 temp = float(file.read()) / 1000.00
 file.close()
 print "temp : %.2f" %temp
-if(temp > 50):
+if(temp > 45):
 	GPIO.output(29,GPIO.HIGH)
 if(temp < 40):
 	GPIO.output(29,GPIO.LOW)

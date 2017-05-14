@@ -16,25 +16,16 @@
 #include <QTextBrowser>
 #include <QOpenGLTexture>
 #include <controlcameracontrol.h>
+#include <QMutex>
 
 //QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
+
+class HandleControl;
+class SaveControl;
 
 namespace Ui {
 class ProgrammableCamera;
 }
-
-class GPIOInterruptJudge:public QThread{
-    Q_OBJECT
-public:
-    GPIOInterruptJudge(int ,QSemaphore *);
-    void run();
-    volatile bool isExiting;
-private :
-    int pinNumber;
-    QSemaphore *judgeSemaphore;
-signals:
-    void getSignal();
-};
 
 class ProgrammableCamera : public QMainWindow
 {
@@ -49,6 +40,7 @@ public:
 
 private:
     Ui::ProgrammableCamera *ui;
+    QMutex threadLock;
 
     void initUIPointers();
     void readConfig();
@@ -98,6 +90,7 @@ private:
 
     QString selectedConfig; //selected config file name,without '.ini',used to find file path by QMap
     QString selectedHandle;//selected handle file name,used to find file path by QMap
+    QString selectedSave;
 
     volatile bool isHandling;
     volatile bool isCapturing;
@@ -109,7 +102,10 @@ private:
     QPushButton *buttonIRControl;
     QPushButton *buttonCapture;
 
-    GPIOInterruptJudge *GPIOINterruptCapture;
+    HandleControl *handleControlThread;
+    SaveControl *saveControlThread;
+
+    QList<QAction *> addedActions;
 
 private slots:
     void onPressModeHand();
@@ -134,28 +130,11 @@ private slots:
 
 public slots:
     void onHandleDone();
+    void onSaveDone();
     void logText(QString);
-    void onCaptureDone(QList<IplImage*>*);
+    void onCaptureDone(QList<cv::Mat>*);
 signals:
     void startCapture();
-};
-
-class CameraViewQOpenGLWidget:public QOpenGLWidget,protected QOpenGLFunctions{
-    Q_OBJECT
-public:
-    CameraViewQOpenGLWidget(QWidget *parent = 0);
-    ~CameraViewQOpenGLWidget();
-
-protected:
-    void initializeGL();
-    void paintGL();
-
-private:
-    QOpenGLBuffer vbo;
-    QOpenGLTexture *texture;
-
-public slots:
-    void updateImage(IplImage *);
 };
 
 class HandleControl:public QThread{
@@ -167,6 +146,8 @@ public:
     void setCurrentHandlePath(QString);
 private:
     QString currentHandlePath;
+signals:
+    void handleDone();
 };
 
 class SaveControl:public QThread{
@@ -176,9 +157,13 @@ public:
     ~SaveControl();
     void run();
     void setSaveMode(QString);
+    void setHandleName(QString);
 private:
-    int saveMode;
+    volatile int saveMode;
+    QString handleName;
     QMap<QString,int> mapOfMode;
+signals:
+    void saveDone();
 };
 
 #endif // PROGRAMMABLECAMERA_H

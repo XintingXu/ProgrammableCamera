@@ -3,7 +3,7 @@
  <class>ProgrammableCamera</class>
  <widget class="QMainWindow" name="ProgrammableCamera">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -44,6 +44,11 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="text">
      <string>Open IR</string>
     </property>
@@ -56,6 +61,11 @@
       <width>161</width>
       <height>71</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
     </property>
     <property name="text">
      <string>Capture</string>
@@ -70,6 +80,11 @@
       <height>211</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
    </widget>
    <widget class="QLabel" name="labelCamera1">
     <property name="geometry">
@@ -79,6 +94,11 @@
       <width>400</width>
       <height>225</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
     </property>
     <property name="text">
      <string>NULL</string>
@@ -92,6 +112,11 @@
       <width>400</width>
       <height>225</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
     </property>
     <property name="text">
      <string>NULL</string>
@@ -121,6 +146,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>24</pointsize>
      <italic>true</italic>
     </font>
@@ -129,6 +155,11 @@
     <cursorShape>BlankCursor</cursorShape>
    </property>
    <widget class="QMenu" name="menuMode">
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="title">
      <string>Mode</string>
     </property>
@@ -136,6 +167,11 @@
     <addaction name="actionModeImport"/>
    </widget>
    <widget class="QMenu" name="menuConfig">
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="title">
      <string>Config</string>
     </property>
@@ -148,6 +184,11 @@
     <addaction name="actionConfigGamma"/>
    </widget>
    <widget class="QMenu" name="menuHandle">
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="title">
      <string>Handle</string>
     </property>
@@ -155,6 +196,11 @@
     <addaction name="actionHandleNo"/>
    </widget>
    <widget class="QMenu" name="menuSave">
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="title">
      <string>Save</string>
     </property>
@@ -162,6 +208,11 @@
     <addaction name="actionSaveResult"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="title">
      <string>About</string>
     </property>
@@ -171,6 +222,11 @@
     <addaction name="actionCleanHandles"/>
    </widget>
    <widget class="QMenu" name="menuQuit">
+    <property name="font">
+     <font>
+      <family>DejaVu Serif</family>
+     </font>
+    </property>
     <property name="title">
      <string>Quit</string>
     </property>
@@ -190,9 +246,13 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
    </property>
   </action>
   <action name="actionModeImport">
@@ -201,6 +261,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -245,6 +306,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -256,6 +318,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -267,6 +330,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -278,6 +342,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -289,6 +354,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -300,6 +366,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -311,9 +378,13 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
    </property>
   </action>
   <action name="actionHandleNo">
@@ -322,6 +393,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -333,9 +405,13 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
    </property>
   </action>
   <action name="actionSaveResult">
@@ -344,6 +420,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -355,9 +432,13 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
    </property>
   </action>
   <action name="actionAboutAuthor">
@@ -366,6 +447,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -377,9 +459,13 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>24</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
    </property>
   </action>
   <action name="actionConfigImport">
@@ -388,9 +474,13 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
    </property>
   </action>
   <action name="actionPowerOFF">
@@ -399,6 +489,7 @@
    </property>
    <property name="font">
     <font>
+     <family>DejaVu Serif</family>
      <pointsize>18</pointsize>
      <italic>true</italic>
     </font>
@@ -408,10 +499,20 @@
    <property name="text">
     <string>Clean Configs</string>
    </property>
+   <property name="font">
+    <font>
+     <family>DejaVu Serif</family>
+    </font>
+   </property>
   </action>
   <action name="actionCleanHandles">
    <property name="text">
     <string>Clean Handles</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>DejaVu Serif</family>
+    </font>
    </property>
   </action>
  </widget>
