@@ -58,16 +58,10 @@ private:
     int CameraNumber;		//摄像头的编号
     cpu_set_t setMask;      //mask used to configure which cpu to run
     int fd;                 //file handle
-    cv::VideoCapture *CameraCapture;
-    //QTimer update;
-    //getShortCut * getImageShourtCut;
-
-private slots:
-//    void onTimerUpdate();
-    //void updateUICamera(cv::Mat *,int);
+    cv::VideoCapture CameraCapture;
 
 public:
-    CameraControlValue CameraConfigure;
+    QList<CameraControlValue> CameraConfigure;
     QList<cv::Mat> captured;
 
     CameraControl(int CameraNumber);		//构造函数
@@ -88,9 +82,6 @@ public:
     volatile bool isUsed = false;
 
     void run();
-signals:
-    void haveCaptured(CameraControl *);
-    //void updateUI(cv::Mat *,int);
 };
 
 class getShortCut:public QThread{

@@ -157,8 +157,10 @@ public:
     ~SaveControl();
     void run();
     void setSaveMode(QString);
+    void setHandleName(QString);
 private:
     volatile int saveMode;
+    QString handleName;
     QMap<QString,int> mapOfMode;
 signals:
     void saveDone();

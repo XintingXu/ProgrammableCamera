@@ -49,9 +49,8 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
         this->CameraViewFinderTimer.at(i)->setParent(this);
     }
 
-    connect(CameraViewFinder.at(0),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)));
-    connect(CameraViewFinder.at(1),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)));
-
+    connect(CameraViewFinder.at(0),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)),Qt::QueuedConnection);
+    connect(CameraViewFinder.at(1),SIGNAL(updateUI(QImage,int)),this,SLOT(updateViewFinder(QImage,int)),Qt::QueuedConnection);
     ui->setupUi(this);
 
     //Init pointers of UI elements
@@ -63,7 +62,7 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     connect(actionModeHand,SIGNAL(triggered()),this,SLOT(onPressModeHand()),Qt::QueuedConnection);
     connect(actionModeImport,SIGNAL(triggered()),this,SLOT(onPressModeImport()),Qt::QueuedConnection);
     connect(actionQuit,SIGNAL(triggered()),this,SLOT(onPressQuit()),Qt::QueuedConnection);
-    connect(this,SIGNAL(startCapture()),cameraControl,SLOT(startCapture()),Qt::QueuedConnection);
+//    connect(this,SIGNAL(startCapture()),cameraControl,SLOT(startCapture()),Qt::QueuedConnection);
     connect(cameraControl,SIGNAL(captureDone(QList<cv::Mat>*)),this,SLOT(onCaptureDone(QList<cv::Mat>*)),Qt::QueuedConnection);
     //connect(cameraControl,SIGNAL(updateUI(cv::Mat*,int)),this,SLOT(updateViewFinder(cv::Mat*,int)));
     //connect(actionPowerOFF,SIGNAL(triggered()),this,SLOT(onPressPowerOFF()));
@@ -85,8 +84,8 @@ ProgrammableCamera::ProgrammableCamera(QWidget *parent):
     CameraViewFinder.at(1)->start();
     CameraViewFinderTimer.at(0)->start(50);
     CameraViewFinderTimer.at(1)->start(70);
-    connect(CameraViewFinderTimer.at(0),SIGNAL(timeout()),this,SLOT(updateViewTimerout0()));
-    connect(CameraViewFinderTimer.at(1),SIGNAL(timeout()),this,SLOT(updateViewTimerout1()));
+    connect(CameraViewFinderTimer.at(0),SIGNAL(timeout()),this,SLOT(updateViewTimerout0()),Qt::DirectConnection);
+    connect(CameraViewFinderTimer.at(1),SIGNAL(timeout()),this,SLOT(updateViewTimerout1()),Qt::DirectConnection);
     connect(buttonIRControl,SIGNAL(clicked(bool)),this,SLOT(onPressButtonIRControl()),Qt::QueuedConnection);
     connect(buttonCapture,SIGNAL(released()),this,SLOT(onPressButtonCapture()),Qt::QueuedConnection);
 
@@ -202,7 +201,7 @@ void ProgrammableCamera::initUIPointers(){
     this->actionQuit = ui->actionQuit;
     this->actionPowerOFF = ui->actionPowerOFF;
 
-    //pointers of OpenGLWidgets to show images
+    //labels to show images
     this->labelCamera1 = ui->labelCamera1;
     this->labelCamera2 = ui->labelCamera2;
 
@@ -331,6 +330,8 @@ void ProgrammableCamera::updateViewTimerout1(){
 }
 
 void ProgrammableCamera::updateViewFinder(QImage image,int cameraNumber){
+    threadLock.lock();
+
     if(image.byteCount() == 0){
         qDebug() << "UI get NULL img pointer.";
     }else{
@@ -340,6 +341,8 @@ void ProgrammableCamera::updateViewFinder(QImage image,int cameraNumber){
             this->labelCamera2->setPixmap(QPixmap::fromImage(image));
         }
     }
+
+    threadLock.unlock();
 }
 
 void ProgrammableCamera::onCaptureDone(QList<cv::Mat> *captured){
@@ -349,15 +352,14 @@ void ProgrammableCamera::onCaptureDone(QList<cv::Mat> *captured){
     command.sprintf("rm temp_images/%s*",selectedHandle.toStdString().data());
     system(command.toStdString().data());
 
+    qDebug() << "get " << captured->length() << " images in total";
+
     for(int i = 0 ; i < captured->length() ; i++){
         cv::Mat toSave;
-        captured->first().copyTo(toSave);
+        captured->at(i).copyTo(toSave);
         QString fileName;
         fileName.sprintf("temp_images/%s%d.jpg",selectedHandle.toStdString().data(),i + 1);
         cv::imwrite(fileName.toStdString().data(),toSave);
-
-        captured->removeFirst();
-        toSave.release();
     }
 
     captured->clear();
@@ -372,25 +374,31 @@ void ProgrammableCamera::onCaptureDone(QList<cv::Mat> *captured){
     this->handleControlThread->setCurrentHandlePath(currentHandle[selectedHandle]);
     this->handleControlThread->start();
 
-    CameraViewFinderTimer.at(0)->start(30);
-    CameraViewFinderTimer.at(1)->start(50);
-
-    CameraViewFinder.at(0)->start();
-    CameraViewFinder.at(1)->start();
-
     threadLock.unlock();
 }
 
 void ProgrammableCamera::onHandleDone(){
+    threadLock.lock();
+
     emit logText("Handle done");
     this->isHandling = false;
     this->saveControlThread->setSaveMode(selectedSave);
+    this->saveControlThread->setHandleName(selectedHandle);
     this->saveControlThread->start();
+
+    threadLock.unlock();
 }
 
 void ProgrammableCamera::onSaveDone(){
+    threadLock.lock();
+
     emit logText("Save done");
     this->buttonCapture->setEnabled(true);
+
+    CameraViewFinderTimer.at(0)->start(100);
+    CameraViewFinderTimer.at(1)->start(150);
+
+    threadLock.unlock();
 }
 
 void ProgrammableCamera::onPressButtonIRControl(){
@@ -430,8 +438,8 @@ void ProgrammableCamera::onPressButtonCapture(){
         CameraViewFinderTimer.at(0)->stop();
         CameraViewFinderTimer.at(1)->stop();
 
-        CameraViewFinder.at(0)->exit();
-        CameraViewFinder.at(1)->exit();
+        CameraViewFinder.at(0)->wait();
+        CameraViewFinder.at(1)->wait();
 
         if(this->cameraControl->setConfigFile(currentConfig[selectedConfig])){
             qDebug() << "ProgrammableCamera start startCapture";

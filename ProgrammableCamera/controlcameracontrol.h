@@ -24,7 +24,7 @@ public:
     bool setConfigFile(QString );
     bool isExiting;
     bool isCapturing;
-    QList<cv::Mat> captured[4];
+    QList<cv::Mat> *captured[4];
     QList<cv::Mat> captureDoneImage;
 
 private:
@@ -33,8 +33,7 @@ private:
     CameraControl * camera[4];
     QMap <QString,int> mapOfCameraNumber;
     QString configFileName;
-    QList <CameraControlValue*> controlValue[4];
-    int haveCapturedNumber[4] = {0,0,0,0};
+    QList <CameraControlValue> controlValue[4];
     QString cameraPath[4] = {"/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.4.2:1.0-video-index0",
                              "/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.4.2:1.0-video-index1",
                              "/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.4.3:1.0-video-index0",
@@ -43,17 +42,12 @@ private:
     void loadCapture(CameraControl *,int);
     void captureDoneDeal();
 
-private slots:
-    void captureFinished(CameraControl *);
-    //    void updateUICamera(cv::Mat *,int);
 public slots:
     void startCapture();
 
 signals:
-    void handleDone();
     void captureDone(QList<cv::Mat>*);
     void logText(QString);
-    //    void updateUI(cv::Mat *,int);
 };
 
 #endif // CONTROLCAMERACONTROL
